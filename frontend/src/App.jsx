@@ -1,12 +1,25 @@
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from './context/AuthContext';
 import HomePage from './pages/HomePage';
 import CreateCalendar from './pages/CreateCalendar';
 import AuthPage from './pages/AuthPage';
+import Dashboard from './pages/Dashboard';
 
 function App() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { isAuthenticated, user, logout, loading } = useAuth();
   const isHomePage = location.pathname === '/';
+
+  if (loading) {
+    return (
+      <div className="app">
+        <div className="loading-screen">
+          <p>Ładowanie...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="app">
@@ -17,7 +30,11 @@ function App() {
           Kalendarz Życia
         </h1>
         {isHomePage ? (
-          <button className="btn-login" onClick={() => navigate('/logowanie')}>Zaloguj</button>
+          isAuthenticated ? (
+            <button className="btn-login" onClick={() => navigate('/dashboard')}>Panel</button>
+          ) : (
+            <button className="btn-login" onClick={() => navigate('/logowanie')}>Zaloguj</button>
+          )
         ) : (
           <div className="navbar-spacer"></div>
         )}
@@ -28,6 +45,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/stworz-kalendarz" element={<CreateCalendar />} />
         <Route path="/logowanie" element={<AuthPage />} />
+        <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
 
       {/* Footer */}

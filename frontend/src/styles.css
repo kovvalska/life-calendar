@@ -506,6 +506,163 @@ body {
   font-size: 1.2rem;
 }
 
+/* Alerts */
+.alert {
+  padding: 1rem 1.25rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.alert-error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+}
+
+.alert-success {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #16a34a;
+}
+
+/* Verification Input */
+.verification-input {
+  text-align: center;
+  font-size: 1.5rem !important;
+  letter-spacing: 8px;
+  font-weight: 600;
+}
+
+/* Resend Button */
+.btn-resend {
+  width: 100%;
+  padding: 0.75rem;
+  background: transparent;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 10px;
+  color: #6b6b6b;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-resend:hover {
+  border-color: #2a2a2a;
+  color: #2a2a2a;
+}
+
+.btn-resend:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Loading Screen */
+.loading-screen {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  color: #6b6b6b;
+}
+
+/* Dashboard */
+.dashboard-container {
+  max-width: 500px;
+}
+
+.dashboard-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.dashboard-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 0.5rem;
+}
+
+.dashboard-header p {
+  color: #6b6b6b;
+  font-size: 1rem;
+}
+
+.dashboard-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.user-info-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+  border-radius: 16px;
+}
+
+.user-avatar {
+  width: 60px;
+  height: 60px;
+  background: #f5f5f5;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.user-details {
+  flex: 1;
+}
+
+.user-email {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2a2a2a;
+  margin-bottom: 0.25rem;
+}
+
+.user-status {
+  font-size: 0.85rem;
+  color: #16a34a;
+}
+
+.dashboard-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.btn-logout {
+  width: 100%;
+  padding: 0.9rem 2rem;
+  background: transparent;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 10px;
+  color: #6b6b6b;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-logout:hover {
+  border-color: #dc2626;
+  color: #dc2626;
+}
+
+/* Disabled button */
+.btn-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
 /* Animations */
 @keyframes fadeInUp {
   from {

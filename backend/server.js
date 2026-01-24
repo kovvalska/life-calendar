@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// Połączenie z MongoDB (opcjonalne - można uruchomić bez bazy)
+// Połączenie z MongoDB
 const connectDB = async () => {
   try {
     if (process.env.MONGODB_URI) {
@@ -28,6 +28,9 @@ const connectDB = async () => {
 };
 
 // Routes
+const authRoutes = require('./routes/auth');
+app.use('/api/auth', authRoutes);
+
 app.get('/', (req, res) => {
   res.json({ message: 'Hello World! 🌍 Backend działa!' });
 });
