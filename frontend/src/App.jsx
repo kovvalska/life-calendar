@@ -1,3 +1,7 @@
+import { Routes, Route } from 'react-router-dom';
+import HomePage from './pages/HomePage';
+import CreateCalendar from './pages/CreateCalendar';
+
 function App() {
   return (
     <div className="app">
@@ -8,28 +12,11 @@ function App() {
         <button className="btn-login">Zaloguj</button>
       </nav>
 
-      {/* Hero Section */}
-      <main className="hero">
-        <h1 className="hero-title">Twoje życie w jednym spojrzeniu</h1>
-        <h2 className="hero-subtitle">
-          Wizualizuj swoją przeszłość i zaplanuj przyszłość w prosty sposób
-        </h2>
-
-        {/* Options */}
-        <div className="options">
-          <div className="option-card">
-            <h3 className="option-title">Stwórz własny kalendarz</h3>
-            <p className="option-description">Spersonalizuj swoje życie</p>
-            <button className="btn-select">Wybierz</button>
-          </div>
-
-          <div className="option-card">
-            <h3 className="option-title">Szybka wizualizacja</h3>
-            <p className="option-description">Zobacz demo w kilka sekund</p>
-            <button className="btn-select">Wybierz</button>
-          </div>
-        </div>
-      </main>
+      {/* Routes */}
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/stworz-kalendarz" element={<CreateCalendar />} />
+      </Routes>
 
       {/* Footer */}
       <footer className="footer">
