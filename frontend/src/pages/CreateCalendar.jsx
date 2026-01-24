@@ -25,8 +25,8 @@ function CreateCalendar() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Form data:', formData);
-    // TODO: Przejście do kroku rejestracji
+    // Przekierowanie do strony logowania z danymi kalendarza
+    navigate('/logowanie', { state: { calendarData: formData } });
   };
 
   return (
@@ -48,18 +48,19 @@ function CreateCalendar() {
             <h2 className="section-title">Podstawowe informacje</h2>
             
             <div className="form-group">
-              <label htmlFor="name">Nazwa kalendarza</label>
+              <label htmlFor="name">Nazwa kalendarza <span className="required">*</span></label>
               <input
                 type="text"
                 id="name"
                 value={formData.name}
                 onChange={(e) => handleChange('name', e.target.value)}
                 placeholder="Mój Kalendarz"
+                required
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="birthDate">Data urodzenia</label>
+              <label htmlFor="birthDate">Data urodzenia <span className="required">*</span></label>
               <input
                 type="date"
                 id="birthDate"
@@ -70,7 +71,7 @@ function CreateCalendar() {
             </div>
 
             <div className="form-group">
-              <label>Płeć</label>
+              <label>Płeć <span className="required">*</span></label>
               <div className="radio-group">
                 <label className="radio-option">
                   <input
@@ -79,6 +80,7 @@ function CreateCalendar() {
                     value="female"
                     checked={formData.gender === 'female'}
                     onChange={(e) => handleChange('gender', e.target.value)}
+                    required
                   />
                   <span className="radio-label">Kobieta</span>
                 </label>
