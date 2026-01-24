@@ -42,7 +42,7 @@ app.get('/api/health', (req, res) => {
 
 // Uruchomienie serwera
 connectDB().then(() => {
-  app.listen(PORT, () => {
+  app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 Serwer działa na porcie ${PORT}`);
     console.log(`📍 http://localhost:${PORT}`);
   });

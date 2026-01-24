@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
 
+// URL backendu - lokalnie localhost, na produkcji zmienna środowiskowa
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 function App() {
   const [backendMessage, setBackendMessage] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Pobierz wiadomość z backendu
-    fetch('http://localhost:5000/')
+    fetch(`${API_URL}/`)
       .then(res => res.json())
       .then(data => {
         setBackendMessage(data.message);
