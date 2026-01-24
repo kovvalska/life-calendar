@@ -1,54 +1,39 @@
-import { useState, useEffect } from 'react';
-
-// URL backendu - lokalnie localhost, na produkcji zmienna środowiskowa
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-
 function App() {
-  const [backendMessage, setBackendMessage] = useState('');
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // Pobierz wiadomość z backendu
-    fetch(`${API_URL}/`)
-      .then(res => res.json())
-      .then(data => {
-        setBackendMessage(data.message);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error('Błąd połączenia z backendem:', err);
-        setBackendMessage('Backend niedostępny');
-        setLoading(false);
-      });
-  }, []);
-
   return (
     <div className="app">
-      <header className="header">
-        <h1>🗓️ Life Calendar</h1>
-        <p className="subtitle">Hello World!</p>
-      </header>
-      
-      <main className="main">
-        <div className="card">
-          <h2>Frontend (React)</h2>
-          <p className="status success">✅ Działa!</p>
-        </div>
-        
-        <div className="card">
-          <h2>Backend (Express)</h2>
-          {loading ? (
-            <p className="status loading">⏳ Ładowanie...</p>
-          ) : (
-            <p className={`status ${backendMessage.includes('niedostępny') ? 'error' : 'success'}`}>
-              {backendMessage}
-            </p>
-          )}
+      {/* Navbar */}
+      <nav className="navbar">
+        <div className="navbar-spacer"></div>
+        <h1 className="navbar-title">Kalendarz Życia</h1>
+        <button className="btn-login">Zaloguj</button>
+      </nav>
+
+      {/* Hero Section */}
+      <main className="hero">
+        <h1 className="hero-title">Twoje życie w jednym spojrzeniu</h1>
+        <h2 className="hero-subtitle">
+          Wizualizuj swoją przeszłość i zaplanuj przyszłość w prosty sposób
+        </h2>
+
+        {/* Options */}
+        <div className="options">
+          <div className="option-card">
+            <h3 className="option-title">Stwórz własny kalendarz</h3>
+            <p className="option-description">Spersonalizuj swoje życie</p>
+            <button className="btn-select">Wybierz</button>
+          </div>
+
+          <div className="option-card">
+            <h3 className="option-title">Szybka wizualizacja</h3>
+            <p className="option-description">Zobacz demo w kilka sekund</p>
+            <button className="btn-select">Wybierz</button>
+          </div>
         </div>
       </main>
-      
+
+      {/* Footer */}
       <footer className="footer">
-        <p>Stack: React + Node.js + Express + MongoDB</p>
+        <p>Autor: Martyna Jastrzębska 2026</p>
       </footer>
     </div>
   );
