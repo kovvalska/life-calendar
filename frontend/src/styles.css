@@ -675,6 +675,235 @@ body {
   }
 }
 
+/* Calendar Result Page */
+.result-container {
+  max-width: 700px;
+}
+
+.result-hero {
+  text-align: center;
+  padding: 2rem;
+  background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+  border-radius: 16px;
+  color: #ffffff;
+  margin-bottom: 1.5rem;
+}
+
+.result-main-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.stat-number {
+  font-size: 4.5rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 1rem;
+  color: #a0a0a0;
+  margin-top: 0.5rem;
+}
+
+.result-progress {
+  width: 100%;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4ade80 0%, #22c55e 100%);
+  border-radius: 6px;
+  transition: width 1s ease-out;
+}
+
+.progress-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+  color: #a0a0a0;
+}
+
+.result-section {
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+  border-radius: 16px;
+  padding: 1.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.stat-card {
+  text-align: center;
+  padding: 1.25rem;
+  background: #f8f8f8;
+  border-radius: 12px;
+}
+
+.stat-card.highlight {
+  background: #2a2a2a;
+  color: #ffffff;
+}
+
+.stat-card.highlight .stat-desc {
+  color: #a0a0a0;
+}
+
+.stat-value {
+  display: block;
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.stat-desc {
+  font-size: 0.8rem;
+  color: #6b6b6b;
+}
+
+.factors-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.factor-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: #f8f8f8;
+  border-radius: 8px;
+  border-left: 4px solid #e5e5e5;
+}
+
+.factor-item.positive {
+  border-left-color: #22c55e;
+}
+
+.factor-item.negative {
+  border-left-color: #ef4444;
+}
+
+.factor-item.neutral {
+  border-left-color: #a0a0a0;
+}
+
+.factor-name {
+  font-size: 0.95rem;
+  color: #3a3a3a;
+}
+
+.factor-impact {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.factor-item.positive .factor-impact {
+  color: #16a34a;
+}
+
+.factor-item.negative .factor-impact {
+  color: #dc2626;
+}
+
+.total-modifier {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  margin-top: 1rem;
+  background: #2a2a2a;
+  border-radius: 8px;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.total-modifier .positive {
+  color: #4ade80;
+}
+
+.total-modifier .negative {
+  color: #f87171;
+}
+
+.summary-card {
+  background: #f8f8f8;
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.summary-card p {
+  margin-bottom: 0.75rem;
+  color: #4a4a4a;
+  line-height: 1.7;
+}
+
+.summary-card p:last-child {
+  margin-bottom: 0;
+}
+
+.summary-card .suggestion {
+  padding-top: 0.75rem;
+  border-top: 1px solid #e5e5e5;
+  color: #6b6b6b;
+  font-size: 0.9rem;
+}
+
+.disclaimer {
+  padding: 1rem 1.25rem;
+  background: #fef3c7;
+  border: 1px solid #fcd34d;
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+}
+
+.disclaimer p {
+  font-size: 0.85rem;
+  color: #92400e;
+  margin: 0;
+}
+
+.result-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.btn-secondary {
+  width: 100%;
+  padding: 0.9rem 2rem;
+  background: transparent;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 10px;
+  color: #4a4a4a;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  border-color: #2a2a2a;
+  color: #2a2a2a;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .navbar {
@@ -748,5 +977,17 @@ body {
   .auth-switch p {
     flex-direction: column;
     gap: 0.25rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-number {
+    font-size: 3.5rem;
+  }
+
+  .result-hero {
+    padding: 1.5rem;
   }
 }

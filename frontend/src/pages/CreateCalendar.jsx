@@ -25,8 +25,8 @@ function CreateCalendar() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Przekierowanie do strony logowania z danymi kalendarza
-    navigate('/logowanie', { state: { calendarData: formData } });
+    // Przekierowanie do strony wyników z danymi kalendarza
+    navigate('/wynik', { state: { calendarData: formData } });
   };
 
   return (

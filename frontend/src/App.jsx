@@ -4,6 +4,7 @@ import HomePage from './pages/HomePage';
 import CreateCalendar from './pages/CreateCalendar';
 import AuthPage from './pages/AuthPage';
 import Dashboard from './pages/Dashboard';
+import CalendarResult from './pages/CalendarResult';
 
 function App() {
   const navigate = useNavigate();
@@ -46,6 +47,7 @@ function App() {
         <Route path="/stworz-kalendarz" element={<CreateCalendar />} />
         <Route path="/logowanie" element={<AuthPage />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/wynik" element={<CalendarResult />} />
       </Routes>
 
       {/* Footer */}
