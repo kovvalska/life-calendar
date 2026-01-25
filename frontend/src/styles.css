@@ -1189,6 +1189,11 @@ body {
   padding-right: 0.35rem;
 }
 
+.calendar-column-label {
+  padding-right: 0;
+  padding-bottom: 0.25rem;
+}
+
 .calendar-cell {
   aspect-ratio: 1;
   min-width: 0;
@@ -1945,6 +1950,20 @@ body {
   .calendar-meta {
     gap: 0.75rem;
   }
+
+  .calendar-result-calendar .calendar-grid {
+    padding: 0.25rem 0;
+    gap: 1px;
+    overflow-x: auto;
+    overflow-y: visible;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+  }
+
+  .calendar-result-calendar .calendar-cell {
+    min-width: 24px;
+  }
 }
 
 @media (max-width: 768px) {
@@ -1976,16 +1995,6 @@ body {
 
   .calendar-result-title {
     font-size: 1.6rem;
-  }
-
-  .calendar-result-calendar .calendar-grid {
-    padding: 0.25rem 0;
-    gap: 1px;
-    overflow-x: auto;
-    overflow-y: visible;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE and Edge */
   }
 
   .calendar-result-calendar .calendar-grid::-webkit-scrollbar {

@@ -585,11 +585,30 @@ function CalendarResult() {
               gap: '2px'
             }}
           >
+            {/* Etykiety kolumn - co druga kolumna (1, 3, 5, ..., 25) */}
+            <div
+              className="calendar-year-label"
+              style={{ gridColumn: 1, gridRow: 1 }}
+            >
+            </div>
+            {Array.from({ length: CELLS_PER_ROW / 2 }, (_, i) => {
+              const colNum = i * 2 + 1; // 1, 3, 5, ..., 25
+              const gridCol = (i * 2) + 2; // Kolumna w gridzie: 2, 4, 6, ..., 26
+              return (
+                <div
+                  key={`col-${colNum}`}
+                  className="calendar-year-label calendar-column-label"
+                  style={{ gridColumn: gridCol, gridRow: 1 }}
+                >
+                  {colNum}
+                </div>
+              );
+            })}
             {Array.from({ length: totalYears }, (_, year) => {
               const yearNum = year + 1;
               const baseIdx = year * WEEKS_PER_YEAR;
-              const row1 = 2 * year + 1;
-              const row2 = 2 * year + 2;
+              const row1 = 2 * year + 2; // +1 bo pierwszy wiersz to etykiety kolumn
+              const row2 = 2 * year + 3;
               return (
                 <Fragment key={year}>
                   <div
