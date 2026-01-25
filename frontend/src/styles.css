@@ -74,6 +74,9 @@ body {
   justify-content: center;
   padding: 4rem 2rem;
   text-align: center;
+  max-width: 880px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 .hero-title {
@@ -108,7 +111,7 @@ body {
   border: 1px solid #e5e5e5;
   border-radius: 16px;
   padding: 1.5rem;
-  width: 280px;
+  width: 320px;
   cursor: pointer;
   box-shadow: 0 0 0 rgba(0, 0, 0, 0);
   transition: border-color 0.4s ease, box-shadow 0.5s ease;
@@ -195,7 +198,8 @@ body {
 
 .form-container {
   width: 100%;
-  max-width: 480px;
+  max-width: 520px;
+  margin: 0 auto;
 }
 
 .btn-back {
@@ -295,6 +299,42 @@ body {
   background: #ffffff;
 }
 
+/* Password input wrapper */
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-wrapper input {
+  padding-right: 3rem;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 0.25rem 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+  z-index: 1;
+}
+
+.password-toggle:hover {
+  opacity: 1;
+}
+
+.password-toggle:focus {
+  outline: none;
+  opacity: 1;
+}
+
 .form-group input::placeholder {
   color: #a0a0a0;
 }
@@ -348,33 +388,40 @@ body {
   -webkit-appearance: none;
   appearance: none;
   height: 6px;
-  background: #e5e5e5;
-  border-radius: 3px;
+  background: linear-gradient(135deg, #eeeeee 0%, #ebebeb 100%);
+  border-radius: 10px;
   outline: none;
+  border: 1px solid #ffffff;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .range-input::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 20px;
-  height: 20px;
-  background: #2a2a2a;
+  width: 18px;
+  height: 18px;
+  background: linear-gradient(135deg, #3a3a3a 0%, #1a1a1a 100%);
   border-radius: 50%;
   cursor: pointer;
-  transition: transform 0.2s ease;
-}
-
-.range-input::-webkit-slider-thumb:hover {
-  transform: scale(1.1);
+  transition: all 0.2s ease;
+  border: none;
 }
 
 .range-input::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
-  background: #2a2a2a;
+  width: 24px;
+  height: 24px;
+  background: linear-gradient(135deg, #3a3a3a 0%, #1a1a1a 100%);
   border-radius: 50%;
   cursor: pointer;
   border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), 0 1px 3px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+}
+
+.range-input::-moz-range-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(135deg, #2a2a2a 0%, #0a0a0a 100%);
 }
 
 .range-value {
@@ -385,36 +432,38 @@ body {
 }
 
 .range-3 {
-  max-width: 160px;
+  width: 100%;
 }
 
-/* Submit button */
+/* Submit button - ujednolicony styl z btn-select */
 .btn-submit {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 1rem 2rem;
-  font-size: 1rem;
-  font-weight: 600;
-  color: #ffffff;
-  background: #2a2a2a;
-  border: none;
-  border-radius: 10px;
+  gap: 0.4rem;
+  padding: 0.6rem 1.6rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #4a4a4a;
+  background-color: transparent;
+  border: 1.5px solid #d0d0d0;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
   align-self: flex-end;
 }
 
 .btn-submit:hover {
-  background: #1a1a1a;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background-color: #2a2a2a;
+  border-color: #2a2a2a;
+  color: #ffffff;
+  transform: none;
+  box-shadow: none;
 }
 
 /* Auth Page */
 .auth-container {
-  max-width: 336px;
+  max-width: 360px;
 }
 
 .auth-form {
@@ -424,7 +473,10 @@ body {
 }
 
 .auth-form .form-section {
-  padding: 2rem;
+  padding: 1.75rem;
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+  border-radius: 16px;
 }
 
 .auth-form .form-group {
@@ -433,7 +485,6 @@ body {
 
 .btn-auth {
   width: 100%;
-  padding: 0.9rem 2rem;
   align-self: stretch;
 }
 
@@ -471,6 +522,7 @@ body {
 
 .auth-switch {
   text-align: center;
+  margin-bottom: 2rem;
 }
 
 .auth-switch p {
@@ -563,7 +615,7 @@ body {
 
 /* Dashboard */
 .dashboard-container {
-  max-width: 560px;
+  max-width: 880px;
 }
 
 .dashboard-header {
@@ -595,21 +647,21 @@ body {
 }
 
 .btn-logout {
-  padding: 0.75rem 1.5rem;
-  font-size: 0.95rem;
+  padding: 0.6rem 1.5rem;
+  font-size: 0.9rem;
   font-weight: 500;
-  color: #6b6b6b;
-  background: transparent;
-  border: 1.5px solid #e0e0e0;
-  border-radius: 10px;
+  color: #4a4a4a;
+  background-color: transparent;
+  border: 1.5px solid #d0d0d0;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .btn-logout:hover {
-  background: #f5f5f5;
-  border-color: #c0c0c0;
-  color: #2a2a2a;
+  background-color: #2a2a2a;
+  border-color: #2a2a2a;
+  color: #ffffff;
 }
 
 .calendars-section {
@@ -633,7 +685,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.25rem;
+  padding: 1.75rem;
   background: #ffffff;
   border: 1px solid #e5e5e5;
   border-radius: 16px;
@@ -705,6 +757,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  margin: 0 auto;
 }
 
 .info-and-carousel-row {
@@ -802,18 +855,21 @@ body {
 .btn-add-suggestion {
   align-self: flex-start;
   margin-top: 0.25rem;
-  padding: 0.35rem 0.75rem;
-  font-size: 0.85rem;
+  padding: 0.6rem 1.5rem;
+  font-size: 0.9rem;
   font-weight: 500;
-  border: 1px solid #2a2a2a;
-  background: #2a2a2a;
-  color: #fff;
+  color: #4a4a4a;
+  background-color: transparent;
+  border: 1.5px solid #d0d0d0;
   border-radius: 8px;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .btn-add-suggestion:hover:not(:disabled) {
-  background: #1a1a1a;
+  background-color: #2a2a2a;
+  border-color: #2a2a2a;
+  color: #ffffff;
 }
 
 .btn-add-suggestion:disabled {
@@ -845,6 +901,8 @@ body {
 .carousel-dot.active {
   background: #2a2a2a;
 }
+
+
 
 @media (min-width: 900px) {
   .info-and-carousel-row {
@@ -1308,23 +1366,25 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.55rem;
+  gap: 0.4rem;
   margin: 1.25rem 2rem 1.5rem;
-  padding: 0.95rem 1.6rem;
-  font-size: 1rem;
-  font-weight: 600;
-  color: #ffffff;
-  background: #2a2a2a;
-  border: none;
-  border-radius: 10px;
+  padding: 0.6rem 1.6rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #4a4a4a;
+  background-color: transparent;
+  border: 1.5px solid #d0d0d0;
+  border-radius: 8px;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
 }
 
 .btn-show-add-form:hover {
-  background: #1a1a1a;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  background-color: #2a2a2a;
+  border-color: #2a2a2a;
+  color: #ffffff;
+  transform: none;
+  box-shadow: none;
 }
 
 /* Formularz „Nowe wydarzenie” / „Edytuj wydarzenie” */
@@ -1519,41 +1579,45 @@ body {
   display: block;
   width: 100%;
   margin-top: 1.25rem;
-  padding: 0.85rem 1.5rem;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #ffffff;
-  background: #2a2a2a;
-  border: none;
-  border-radius: 10px;
+  padding: 0.6rem 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #4a4a4a;
+  background-color: transparent;
+  border: 1.5px solid #d0d0d0;
+  border-radius: 8px;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .btn-add-event:hover:not(:disabled) {
-  background: #1a1a1a;
-  transform: translateY(-1px);
+  background-color: #2a2a2a;
+  border-color: #2a2a2a;
+  color: #ffffff;
+  transform: none;
 }
 
 .btn-add-event:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  transform: none;
 }
 
 .week-modal-actions .btn-secondary {
-  padding: 0.75rem 1.5rem;
-  font-size: 0.95rem;
+  padding: 0.6rem 1.5rem;
+  font-size: 0.9rem;
   font-weight: 500;
   color: #4a4a4a;
-  background: transparent;
+  background-color: transparent;
   border: 1.5px solid #d0d0d0;
   border-radius: 8px;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .week-modal-actions .btn-secondary:hover {
-  background: #f5f5f5;
-  border-color: #c0c0c0;
+  background-color: #2a2a2a;
+  border-color: #2a2a2a;
+  color: #ffffff;
 }
 
 .week-modal-actions {
@@ -1568,9 +1632,9 @@ body {
 .week-modal-actions .btn-submit {
   align-self: unset;
   margin: 0;
-  padding: 0.75rem 1.5rem;
-  font-size: 0.95rem;
-  font-weight: 600;
+  padding: 0.6rem 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
 }
 
 /* Animations */
@@ -1588,7 +1652,7 @@ body {
 /* Responsive */
 @media (max-width: 768px) {
   .navbar {
-    padding: 1rem 1.5rem;
+    padding: 0.85rem 1rem;
   }
 
   .navbar-spacer {
@@ -1597,6 +1661,10 @@ body {
 
   .navbar-title {
     font-size: 1.15rem;
+  }
+
+  .hero {
+    padding: 3rem 1rem;
   }
 
   .hero-title {
@@ -1610,15 +1678,11 @@ body {
   .options {
     flex-direction: column;
     align-items: center;
-  }
-
-  .option-card {
-    width: 100%;
-    max-width: 240px;
+    gap: 1rem;
   }
 
   .form-page {
-    padding: 1.5rem 1rem;
+    padding: 1rem;
   }
 
   .form-header h1 {
@@ -1630,7 +1694,7 @@ body {
   }
 
   .radio-group {
-    flex-direction: column;
+    flex-wrap: wrap;
   }
 
   .range-container {
@@ -1648,11 +1712,16 @@ body {
   }
 
   .btn-submit {
-    width: 100%;
+    align-self: flex-end;
   }
 
   .auth-form .form-section {
-    padding: 1.5rem;
+    padding: 1.25rem;
+  }
+  
+  .btn-auth {
+    width: 100%;
+    align-self: stretch;
   }
 
   .auth-switch p {
@@ -1662,23 +1731,23 @@ body {
 
   .dashboard-actions {
     flex-direction: column;
-  }
-
-  .dashboard-actions .btn-submit,
-  .dashboard-actions .btn-logout {
-    width: 100%;
+    align-items: flex-start;
   }
 
   .calendar-result-page {
-    padding: 1rem;
+    padding: 0.5rem;
+  }
+
+  .calendar-result-container {
+    gap: 1rem;
   }
 
   .calendar-result-block {
-    padding: 1.25rem;
+    padding: 1rem;
   }
 
   .calendar-result-info {
-    padding: 1.5rem 1.25rem;
+    padding: 1.25rem 1rem;
   }
 
   .calendar-result-title {
@@ -1686,7 +1755,7 @@ body {
   }
 
   .calendar-result-calendar .calendar-grid {
-    padding: 0.35rem 0;
+    padding: 0.25rem 0;
     gap: 1px;
   }
 
@@ -1698,18 +1767,18 @@ body {
 
   .week-modal-header,
   .week-section {
-    padding-left: 1.25rem;
-    padding-right: 1.25rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
 
   .btn-show-add-form {
-    margin-left: 1.25rem;
-    margin-right: 1.25rem;
+    margin-left: 1rem;
+    margin-right: 1rem;
   }
 
   .add-event-section {
-    margin-left: 1.25rem;
-    margin-right: 1.25rem;
+    margin-left: 1rem;
+    margin-right: 1rem;
     padding: 1.25rem 1rem !important;
   }
 
@@ -1718,13 +1787,17 @@ body {
   }
 
   .week-modal-actions {
-    padding: 1rem 1.25rem;
+    padding: 1rem;
     flex-direction: column;
+    align-items: flex-start;
   }
 
-  .week-modal-actions .btn-secondary,
-  .week-modal-actions .btn-submit {
-    width: 100%;
+  .modal-overlay {
+    padding: 0.5rem;
+  }
+
+  .modal-content {
+    max-width: calc(100% - 1rem);
   }
 }
 
@@ -1781,4 +1854,10 @@ body {
   color: #d32f2f;
   font-size: 0.8rem;
   margin-top: 0.5rem;
+}
+
+@media (max-width: 340px) {
+  .option-card {
+    width: 100%;
+  }
 }

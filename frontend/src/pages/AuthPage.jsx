@@ -13,6 +13,7 @@ function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   
   // Dane z formularza kalendarza (przekazane przez state)
   const calendarData = location.state?.calendarData;
@@ -212,29 +213,49 @@ function AuthPage() {
 
                 <div className="form-group">
                   <label htmlFor="password">Hasło</label>
-                  <input
-                    type="password"
-                    id="password"
-                    value={formData.password}
-                    onChange={(e) => handleChange('password', e.target.value)}
-                    placeholder="••••••••"
-                    minLength={6}
-                    required
-                  />
+                  <div className="password-input-wrapper">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      id="password"
+                      value={formData.password}
+                      onChange={(e) => handleChange('password', e.target.value)}
+                      placeholder="••••••••"
+                      minLength={6}
+                      required
+                    />
+                    <button
+                      type="button"
+                      className="password-toggle"
+                      onClick={() => setShowPassword(!showPassword)}
+                      tabIndex={-1}
+                    >
+                      {showPassword ? '🙈' : '👁️'}
+                    </button>
+                  </div>
                 </div>
 
                 {!isLogin && (
                   <div className="form-group">
                     <label htmlFor="confirmPassword">Powtórz hasło</label>
-                    <input
-                      type="password"
-                      id="confirmPassword"
-                      value={formData.confirmPassword}
-                      onChange={(e) => handleChange('confirmPassword', e.target.value)}
-                      placeholder="••••••••"
-                      minLength={6}
-                      required
-                    />
+                    <div className="password-input-wrapper">
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        id="confirmPassword"
+                        value={formData.confirmPassword}
+                        onChange={(e) => handleChange('confirmPassword', e.target.value)}
+                        placeholder="••••••••"
+                        minLength={6}
+                        required
+                      />
+                      <button
+                        type="button"
+                        className="password-toggle"
+                        onClick={() => setShowPassword(!showPassword)}
+                        tabIndex={-1}
+                      >
+                        {showPassword ? '🙈' : '👁️'}
+                      </button>
+                    </div>
                   </div>
                 )}
 
