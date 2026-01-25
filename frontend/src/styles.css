@@ -243,10 +243,13 @@ body {
 .form-header p {
   color: #6b6b6b;
   font-size: 1rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 100%;
+}
+
+.form-container:has(.calendar-form) .form-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
 }
 
 .calendar-form {
@@ -962,6 +965,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  position: relative;
 }
 
 .suggestion-card-header {
@@ -990,8 +994,8 @@ body {
 }
 
 .btn-add-suggestion {
-  align-self: flex-start;
-  margin-top: 0.25rem;
+  align-self: flex-end;
+  margin-top: auto;
   padding: 0.6rem 1.5rem;
   font-size: 0.9rem;
   font-weight: 500;
@@ -1288,7 +1292,6 @@ body {
 
 .modal-close:hover {
   color: #2a2a2a;
-  background: #f0f0f0;
 }
 
 .week-modal-header {
@@ -1316,10 +1319,6 @@ body {
 }
 
 /* Modal – tryb sugestii */
-.week-modal--suggestion {
-  border-top: 4px solid var(--suggestion-accent, #e0e0e0);
-}
-
 .week-modal--suggestion .week-modal-header {
   padding-bottom: 1rem;
 }
@@ -1426,8 +1425,6 @@ body {
   font-weight: 600;
   color: #2a2a2a;
   margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid #f0f0f0;
 }
 
 .no-events {
@@ -1569,9 +1566,8 @@ body {
 .add-event-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: baseline;
   margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
   border-bottom: 1px solid #f0f0f0;
 }
 
@@ -1588,18 +1584,15 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f5f5f5;
-  border: 1px solid #e8e8e8;
   color: #6b6b6b;
   font-size: 1.25rem;
   cursor: pointer;
-  border-radius: 10px;
+  background-color: transparent;
+  border: none;
 }
 
 .btn-close-form:hover {
   color: #2a2a2a;
-  background: #eeeeee;
-  border-color: #e0e0e0;
 }
 
 .add-event-section .form-field {
@@ -1657,13 +1650,16 @@ body {
   display: flex;
   gap: 0.65rem;
   align-items: stretch;
+  min-width: 0;
 }
 
 .event-input-wrapper {
   position: relative;
   flex: 1;
+  min-width: 0;
   display: flex;
   align-items: center;
+  overflow: hidden;
 }
 
 .event-input-wrapper input {
@@ -1703,11 +1699,16 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   background: #fafafa;
   border: 1.5px solid #e5e5e5;
   border-radius: 12px;
   cursor: pointer;
+}
+
+.add-event-section .emoji-trigger:focus {
+  background: #fafafa;
+  border-color: #a0a0a0;
 }
 
 .add-event-section .emoji-trigger:hover {
@@ -1729,10 +1730,16 @@ body {
 }
 
 .add-event-section .emoji-option {
-  padding: 0.45rem;
+  width: 40px;
+  height: 40px;
+  padding: 0;
   font-size: 1.15rem;
   border-radius: 10px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 .add-event-section .emoji-option:hover {
@@ -1745,6 +1752,7 @@ body {
 
 .add-event-section input[type="text"] {
   flex: 1;
+  min-width: 0;
   min-height: 48px;
   padding: 0.75rem 1rem;
   font-size: 0.95rem;
@@ -1752,6 +1760,9 @@ body {
   border-radius: 12px;
   background: #fafafa;
   font-family: inherit;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
 }
 
 .add-event-section textarea {
@@ -1962,7 +1973,7 @@ body {
   }
 
   .calendar-result-calendar .calendar-cell {
-    min-width: 24px;
+    min-width: 28px;
   }
 }
 
@@ -2030,8 +2041,43 @@ body {
 
   .week-modal-actions {
     padding: 1rem;
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  .event-input-wrapper {
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .event-input-wrapper input {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.75rem;
+    height: 36px;
+    min-height: 36px;
+    line-height: 1.2;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .add-event-section input[type="text"] {
+    min-height: 36px;
+    height: 36px;
+  }
+
+  .add-event-section .emoji-trigger {
+    width: 36px;
+    height: 36px;
+    min-height: 36px;
+    flex-shrink: 0;
+    border-radius: 8px;
+  }
+
+  .add-event-section .event-input-row {
+    gap: 0.5rem;
   }
 
   .modal-overlay {
@@ -2039,7 +2085,7 @@ body {
   }
 
   .modal-content {
-    max-width: calc(100% - 1rem);
+    max-width: 100%;
   }
 }
 

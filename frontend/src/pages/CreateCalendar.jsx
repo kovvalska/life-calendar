@@ -24,12 +24,82 @@ function CreateCalendar() {
     alcohol: 1
   });
 
+  const [validationError, setValidationError] = useState(null);
+
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const validateForm = () => {
+    setValidationError(null);
+
+    // Walidacja nazwy
+    if (!formData.name || formData.name.trim().length === 0) {
+      setValidationError('Nazwa kalendarza jest wymagana');
+      return false;
+    }
+
+    if (formData.name.trim().length > 30) {
+      setValidationError('Nazwa kalendarza nie może przekraczać 30 znaków');
+      return false;
+    }
+
+    // Walidacja daty urodzenia
+    if (!formData.birthDate) {
+      setValidationError('Data urodzenia jest wymagana');
+      return false;
+    }
+
+    const birthDate = new Date(formData.birthDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (birthDate > today) {
+      setValidationError('Data urodzenia nie może być w przyszłości');
+      return false;
+    }
+
+    // Walidacja maksymalnego wieku (120 lat)
+    const ageInYears = Math.floor((today - birthDate) / (365.25 * 24 * 60 * 60 * 1000));
+    if (ageInYears > 120) {
+      setValidationError('Maksymalny dopuszczalny wiek to 120 lat');
+      return false;
+    }
+
+    // Walidacja płci
+    if (!formData.gender || (formData.gender !== 'male' && formData.gender !== 'female')) {
+      setValidationError('Wybierz płeć');
+      return false;
+    }
+
+    // Walidacja zakresów (powinny być w zakresie 1-5 lub 1-3)
+    if (formData.sleepQuality < 1 || formData.sleepQuality > 5 ||
+        formData.physicalActivity < 1 || formData.physicalActivity > 5 ||
+        formData.nutrition < 1 || formData.nutrition > 5 ||
+        formData.stressLevel < 1 || formData.stressLevel > 5) {
+      setValidationError('Nieprawidłowe wartości w sekcji "Styl życia"');
+      return false;
+    }
+
+    if (formData.smoking < 1 || formData.smoking > 3 ||
+        formData.alcohol < 1 || formData.alcohol > 3) {
+      setValidationError('Nieprawidłowe wartości w sekcji "Używki"');
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    // Walidacja przed przekierowaniem
+    if (!validateForm()) {
+      // Przewiń do góry, aby użytkownik zobaczył błąd
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
     // Przekierowanie do strony wyników z danymi kalendarza
     navigate('/wynik', { state: { calendarData: formData } });
   };
@@ -45,6 +115,19 @@ function CreateCalendar() {
           <h1>Stwórz swój kalendarz</h1>
           <p>Odpowiedz na kilka pytań, aby spersonalizować swój kalendarz życia</p>
         </div>
+
+        {validationError && (
+          <div className="form-error" style={{ 
+            marginBottom: '1.5rem', 
+            padding: '1rem', 
+            background: '#fef2f2', 
+            border: '1px solid #fecaca', 
+            borderRadius: '8px',
+            color: '#991b1b'
+          }}>
+            {validationError}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="calendar-form">
           

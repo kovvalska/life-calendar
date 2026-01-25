@@ -48,6 +48,8 @@ function CalendarResult() {
   const [isTransitioning, setIsTransitioning] = useState(true);
   const dragStartIndexRef = useRef(0); // Oryginalny indeks na początku przeciągania
 
+  const [validationError, setValidationError] = useState(null);
+
   const { birthDate, name, expectedLifespan, livedWeeks, totalWeeks, lifeResult } = useMemo(() => {
     const cal = displayCalendar;
     if (cal) {
@@ -68,15 +70,74 @@ function CalendarResult() {
       };
     }
     if (calendarData) {
-      const result = calculateLifeExpectancy(calendarData);
-      return {
-        birthDate: calendarData.birthDate,
-        name: calendarData.name || 'Mój Kalendarz',
-        expectedLifespan: result.expectedLifespan,
-        livedWeeks: result.livedWeeks,
-        totalWeeks: result.totalWeeks,
-        lifeResult: result
-      };
+      // Walidacja danych przed obliczeniem
+      if (!calendarData.birthDate) {
+        setValidationError('Data urodzenia jest wymagana');
+        return { birthDate: null, name: '', expectedLifespan: 90, livedWeeks: 0, totalWeeks: 4680, lifeResult: null };
+      }
+
+      if (!calendarData.gender || (calendarData.gender !== 'male' && calendarData.gender !== 'female')) {
+        setValidationError('Nieprawidłowa wartość płci');
+        return { birthDate: null, name: '', expectedLifespan: 90, livedWeeks: 0, totalWeeks: 4680, lifeResult: null };
+      }
+
+      const birth = new Date(calendarData.birthDate);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      if (isNaN(birth.getTime())) {
+        setValidationError('Nieprawidłowa data urodzenia');
+        return { birthDate: null, name: '', expectedLifespan: 90, livedWeeks: 0, totalWeeks: 4680, lifeResult: null };
+      }
+
+      if (birth > today) {
+        setValidationError('Data urodzenia nie może być w przyszłości');
+        return { birthDate: null, name: '', expectedLifespan: 90, livedWeeks: 0, totalWeeks: 4680, lifeResult: null };
+      }
+
+      // Walidacja maksymalnego wieku (120 lat)
+      const ageInYears = Math.floor((today - birth) / (365.25 * 24 * 60 * 60 * 1000));
+      if (ageInYears > 120) {
+        setValidationError('Maksymalny dopuszczalny wiek to 120 lat');
+        return { birthDate: null, name: '', expectedLifespan: 90, livedWeeks: 0, totalWeeks: 4680, lifeResult: null };
+      }
+
+      try {
+        const result = calculateLifeExpectancy(calendarData);
+        
+        // Oblicz wiek osoby
+        const birth = new Date(calendarData.birthDate);
+        const today = new Date();
+        const ageInYears = Math.floor((today - birth) / (365.25 * 24 * 60 * 60 * 1000));
+        
+        // Jeśli szacowany wiek jest niższy niż wiek osoby, ustaw na wiek osoby + 2
+        let finalExpectedLifespan = result.expectedLifespan;
+        if (finalExpectedLifespan < ageInYears) {
+          finalExpectedLifespan = ageInYears + 2;
+        }
+        
+        // Walidacja maksymalnego wieku (120 lat)
+        if (finalExpectedLifespan > 120) {
+          setValidationError('Szacowany wiek przekracza maksymalny dopuszczalny wiek (120 lat)');
+          return { birthDate: null, name: '', expectedLifespan: 90, livedWeeks: 0, totalWeeks: 4680, lifeResult: null };
+        }
+        
+        // Przelicz totalWeeks na podstawie poprawionego wieku
+        const totalWeeks = Math.round(finalExpectedLifespan * WEEKS_PER_YEAR);
+        
+        setValidationError(null);
+        return {
+          birthDate: calendarData.birthDate,
+          name: calendarData.name || 'Mój Kalendarz',
+          expectedLifespan: finalExpectedLifespan,
+          livedWeeks: result.livedWeeks,
+          totalWeeks: totalWeeks,
+          lifeResult: { ...result, expectedLifespan: finalExpectedLifespan }
+        };
+      } catch (error) {
+        setValidationError(error.message || 'Błąd obliczania długości życia');
+        return { birthDate: null, name: '', expectedLifespan: 90, livedWeeks: 0, totalWeeks: 4680, lifeResult: null };
+      }
     }
     return { birthDate: null, name: '', expectedLifespan: 90, livedWeeks: 0, totalWeeks: 4680, lifeResult: null };
   }, [displayCalendar, calendarData]);
@@ -295,7 +356,10 @@ function CalendarResult() {
 
   const handleCarouselMove = (e) => {
     if (!isDragging) return;
-    e.preventDefault();
+    // preventDefault tylko dla mouse events, dla touch events jest w addEventListener
+    if (!e.touches) {
+      e.preventDefault();
+    }
     const clientX = getClientX(e);
     const deltaX = clientX - dragStart.x;
     
@@ -373,6 +437,35 @@ function CalendarResult() {
         }
       });
   };
+
+  // Wyświetl błąd walidacji zamiast kalendarza
+  if (validationError && calendarData) {
+    return (
+      <main className="form-page">
+        <div className="form-container">
+          <button className="btn-back" onClick={() => navigate('/stworz-kalendarz')}>
+            ← Powrót do formularza
+          </button>
+          <div className="form-header">
+            <h1>Błąd walidacji danych</h1>
+            <div className="form-error" style={{ 
+              marginTop: '1rem', 
+              padding: '1rem', 
+              background: '#fef2f2', 
+              border: '1px solid #fecaca', 
+              borderRadius: '8px',
+              color: '#991b1b'
+            }}>
+              {validationError}
+            </div>
+            <p style={{ marginTop: '1rem' }}>
+              Wróć do formularza i popraw błędy, aby utworzyć kalendarz.
+            </p>
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   if (!calendarData && !savedCalendar && !restoredCalendar) {
     if (restoreLoading) {

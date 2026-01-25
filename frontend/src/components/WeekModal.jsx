@@ -13,7 +13,15 @@ const AVAILABLE_COLORS = [
 ];
 
 // Popularne emotki
-const POPULAR_EMOJIS = ['📌', '🎉', '💪', '❤️', '⭐', '🎂', '✈️', '🏠', '💼', '📚', '🎓', '💍', '👶', '🏆', '🎯', '🌟', '🔥', '😊', '🎵', '🏥', '💔', '🚗', '🌴', '💰', '🎮'];
+const POPULAR_EMOJIS = [
+  '📌', '🎉', '💪', '❤️', '⭐', '🎂', '✈️', '🏠', '💼', '📚', 
+  '🎓', '💍', '👶', '🏆', '🎯', '🌟', '🔥', '😊', '🎵', '🏥', 
+  '💔', '🚗', '🌴', '💰', '🎮', '🎨', '📝', '🏃', '🎁', '🌍',
+  '🎪', '🎬', '📸', '🎤', '🎸', '🎹', '🏖️', '⛰️', '🌊', '🌸',
+  '🍕', '☕', '🍰', '🎈', '🎊', '💐', '🌹', '💀','👽','🎃','🐱','🐶',
+  '⚽', '🏀', '🎭', '📷', '🎥', '🏋️', '🧘', '🎲', '🎰', '🎯', '💩',
+  '🌈','⚡️','🛒'
+];
 
 function WeekModal({ isOpen, onClose, weekData, onSave, birthDate, suggestion, onAddFromSuggestion, totalWeeks }) {
   const [color, setColor] = useState(null);
@@ -196,12 +204,6 @@ function WeekModal({ isOpen, onClose, weekData, onSave, birthDate, suggestion, o
         
         {isSuggestionMode ? (
           <div className="week-modal-header week-modal-header--suggestion">
-            {suggestion && (
-              <div className="suggestion-badge" style={{ '--suggestion-accent': suggestion.color || '#e0e0e0' }}>
-                <span className="suggestion-badge-emoji">{suggestion.emoji}</span>
-                <span className="suggestion-badge-title">{suggestion.title}</span>
-              </div>
-            )}
             <h2>Dodaj wydarzenie</h2>
             <p className="week-modal-hint">Edytuj treść, wybierz datę i zatwierdź.</p>
           </div>
