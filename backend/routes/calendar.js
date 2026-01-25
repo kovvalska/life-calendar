@@ -10,6 +10,15 @@ const router = express.Router();
 // POST /api/calendar - Zapisz nowy kalendarz
 router.post('/', authMiddleware, validateCalendar, async (req, res) => {
   try {
+    // Sprawdź ile kalendarzy ma użytkownik
+    const calendarCount = await Calendar.countDocuments({ userId: req.userId });
+    if (calendarCount >= 3) {
+      return res.status(400).json({
+        success: false,
+        message: 'Możesz mieć maksymalnie 3 kalendarze. Usuń jeden z istniejących, aby utworzyć nowy.'
+      });
+    }
+
     const {
       name,
       birthDate,

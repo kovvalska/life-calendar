@@ -296,13 +296,16 @@ function WeekModal({ isOpen, onClose, weekData, onSave, birthDate, suggestion, o
                     <button className="emoji-trigger" onClick={() => setShowEmojiPicker(!showEmojiPicker)} title="Wybierz ikonę">
                       {newEvent.emoji}
                     </button>
-                    <input
-                      type="text"
-                      placeholder="Np. Ukończenie studiów"
-                      value={newEvent.name}
-                      onChange={e => setNewEvent({ ...newEvent, name: e.target.value })}
-                      maxLength={100}
-                    />
+                    <div className="event-input-wrapper">
+                      <input
+                        type="text"
+                        placeholder="Np. Ukończenie studiów"
+                        value={newEvent.name}
+                        onChange={e => setNewEvent({ ...newEvent, name: e.target.value })}
+                        maxLength={50}
+                      />
+                      <span className="char-counter">{newEvent.name.length}/50</span>
+                    </div>
                   </div>
                   {showEmojiPicker && (
                     <div className="emoji-picker">
@@ -321,13 +324,16 @@ function WeekModal({ isOpen, onClose, weekData, onSave, birthDate, suggestion, o
 
                 <div className="form-field">
                   <label>Opis (opcjonalnie)</label>
-                  <textarea
-                    placeholder="Dodaj szczegóły..."
-                    value={newEvent.description}
-                    onChange={e => setNewEvent({ ...newEvent, description: e.target.value })}
-                    maxLength={500}
-                    rows={4}
-                  />
+                  <div className="event-textarea-wrapper">
+                    <textarea
+                      placeholder="Dodaj szczegóły..."
+                      value={newEvent.description}
+                      onChange={e => setNewEvent({ ...newEvent, description: e.target.value })}
+                      maxLength={200}
+                      rows={4}
+                    />
+                    <span className="char-counter">{newEvent.description.length}/200</span>
+                  </div>
                 </div>
 
                 {addError && <p className="add-event-error">{addError}</p>}
@@ -361,13 +367,16 @@ function WeekModal({ isOpen, onClose, weekData, onSave, birthDate, suggestion, o
                     <button className="emoji-trigger" onClick={() => setShowEmojiPicker(!showEmojiPicker)} title="Wybierz ikonę">
                       {newEvent.emoji}
                     </button>
-                    <input
-                      type="text"
-                      placeholder="Co się wydarzyło?"
-                      value={newEvent.name}
-                      onChange={e => setNewEvent({ ...newEvent, name: e.target.value })}
-                      maxLength={100}
-                    />
+                    <div className="event-input-wrapper">
+                      <input
+                        type="text"
+                        placeholder="Co się wydarzyło?"
+                        value={newEvent.name}
+                        onChange={e => setNewEvent({ ...newEvent, name: e.target.value })}
+                        maxLength={50}
+                      />
+                      <span className="char-counter">{newEvent.name.length}/50</span>
+                    </div>
                   </div>
                   {showEmojiPicker && (
                     <div className="emoji-picker">
@@ -386,13 +395,16 @@ function WeekModal({ isOpen, onClose, weekData, onSave, birthDate, suggestion, o
 
                 <div className="form-field">
                   <label>Opis (opcjonalnie)</label>
-                  <textarea
-                    placeholder="Dodaj szczegóły..."
-                    value={newEvent.description}
-                    onChange={e => setNewEvent({ ...newEvent, description: e.target.value })}
-                    maxLength={500}
-                    rows={5}
-                  />
+                  <div className="event-textarea-wrapper">
+                    <textarea
+                      placeholder="Dodaj szczegóły..."
+                      value={newEvent.description}
+                      onChange={e => setNewEvent({ ...newEvent, description: e.target.value })}
+                      maxLength={200}
+                      rows={5}
+                    />
+                    <span className="char-counter">{newEvent.description.length}/200</span>
+                  </div>
                 </div>
 
                 <button

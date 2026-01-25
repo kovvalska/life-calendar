@@ -54,14 +54,18 @@ function CreateCalendar() {
             
             <div className="form-group">
               <label htmlFor="name">Nazwa kalendarza <span className="required">*</span></label>
-              <input
-                type="text"
-                id="name"
-                value={formData.name}
-                onChange={(e) => handleChange('name', e.target.value)}
-                placeholder="Mój Kalendarz"
-                required
-              />
+              <div className="calendar-name-input-wrapper">
+                <input
+                  type="text"
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) => handleChange('name', e.target.value)}
+                  placeholder="Mój Kalendarz"
+                  maxLength={30}
+                  required
+                />
+                <span className="char-counter">{formData.name.length}/30</span>
+              </div>
             </div>
 
             <div className="form-group">

@@ -39,11 +39,11 @@ function Dashboard() {
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('pl-PL', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
-    });
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}.${month}.${year}`;
   };
 
   const handleViewCalendar = (calendar) => {
@@ -53,10 +53,22 @@ function Dashboard() {
     });
   };
 
+  const handleCreateCalendar = () => {
+    if (calendars.length >= 3) {
+      alert('Możesz mieć maksymalnie 3 kalendarze. Usuń jeden z istniejących, aby utworzyć nowy.');
+      return;
+    }
+    navigate('/stworz-kalendarz');
+  };
+
   return (
     <main className="form-page">
       <div className="form-container dashboard-container">
-        <div className="dashboard-header">
+        <button className="btn-back" onClick={() => navigate('/')}>
+          ← Powrót
+        </button>
+
+        <div className="form-header">
           <h1>Twój panel</h1>
           <p>Witaj, {user?.email}</p>
         </div>
@@ -66,7 +78,7 @@ function Dashboard() {
           <div className="dashboard-actions">
             <button 
               className="btn-submit" 
-              onClick={() => navigate('/stworz-kalendarz')}
+              onClick={handleCreateCalendar}
             >
               Stwórz nowy kalendarz
             </button>
@@ -80,7 +92,7 @@ function Dashboard() {
 
           {/* Lista kalendarzy */}
           <div className="calendars-section">
-            <h2 className="section-title">Twoje kalendarze</h2>
+            <h2 className="section-title">Twoje kalendarze {calendars.length > 0 && `(${calendars.length})`}</h2>
             
             {loading ? (
               <p className="calendars-loading">Ładowanie...</p>
@@ -91,29 +103,26 @@ function Dashboard() {
                 {calendars.map((calendar) => (
                   <div 
                     key={calendar._id} 
-                    className="calendar-card clickable"
+                    className="calendar-item clickable"
                     onClick={() => handleViewCalendar(calendar)}
                   >
                     <div className="calendar-info">
                       <h3 className="calendar-name">{calendar.name}</h3>
-                      <p className="calendar-stats">
-                        Szacowana długość życia: <strong>{calendar.expectedLifespan} lat</strong>
-                      </p>
-                      <p className="calendar-date">
-                        Utworzono: {formatDate(calendar.createdAt)}
-                      </p>
-                    </div>
-                    <div className="calendar-actions">
-                      <button 
-                        className="btn-delete"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDelete(calendar._id);
-                        }}
-                        title="Usuń kalendarz"
-                      >
-                        🗑️
-                      </button>
+                      <div className="calendar-meta">
+                        <p className="calendar-date">
+                          {formatDate(calendar.createdAt)}
+                        </p>
+                        <button 
+                          className="btn-delete"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(calendar._id);
+                          }}
+                          title="Usuń kalendarz"
+                        >
+                          🗑️
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}

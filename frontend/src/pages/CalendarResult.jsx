@@ -130,9 +130,14 @@ function CalendarResult() {
         setSaveStatus('saved');
       })
       .catch((err) => {
-        setSaveError(err.message || 'Błąd zapisu');
+        const errorMessage = err.message || 'Błąd zapisu';
+        setSaveError(errorMessage);
         setSaveStatus('error');
         hasSavedRef.current = false;
+        // Jeśli błąd dotyczy limitu kalendarzy, pokaż alert
+        if (errorMessage.includes('maksymalnie 3 kalendarze')) {
+          alert(errorMessage);
+        }
       });
   }, [calendarData, lifeResult, isAuthenticated, fromDashboard, alreadySaved, saveCalendar]);
 
@@ -232,8 +237,13 @@ function CalendarResult() {
         setSaveStatus('saved');
       })
       .catch((err) => {
-        setSaveError(err.message || 'Błąd zapisu');
+        const errorMessage = err.message || 'Błąd zapisu';
+        setSaveError(errorMessage);
         setSaveStatus('error');
+        // Jeśli błąd dotyczy limitu kalendarzy, pokaż alert
+        if (errorMessage.includes('maksymalnie 3 kalendarze')) {
+          alert(errorMessage);
+        }
       });
   };
 

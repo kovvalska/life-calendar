@@ -1,7 +1,38 @@
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 function HomePage() {
   const navigate = useNavigate();
+  const { isAuthenticated, getCalendars } = useAuth();
+  const [calendars, setCalendars] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      const fetchCalendars = async () => {
+        try {
+          const data = await getCalendars();
+          setCalendars(data);
+        } catch (error) {
+          console.error('Error fetching calendars:', error);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchCalendars();
+    } else {
+      setLoading(false);
+    }
+  }, [isAuthenticated, getCalendars]);
+
+  const handleCreateCalendar = () => {
+    if (isAuthenticated && calendars.length >= 3) {
+      alert('Możesz mieć maksymalnie 3 kalendarze. Usuń jeden z istniejących, aby utworzyć nowy.');
+      return;
+    }
+    navigate('/stworz-kalendarz');
+  };
 
   return (
     <>
@@ -14,7 +45,7 @@ function HomePage() {
 
         {/* Options */}
         <div className="options">
-          <div className="option-card" onClick={() => navigate('/stworz-kalendarz')}>
+          <div className="option-card" onClick={handleCreateCalendar}>
             <h3 className="option-title">Stwórz własny kalendarz</h3>
             <p className="option-description">Spersonalizuj swoje życie</p>
             <button className="btn-select">Wybierz</button>
