@@ -135,7 +135,14 @@ function WeekModal({ isOpen, onClose, weekData, onSave, birthDate, suggestion, o
   };
 
   const handleRemoveEvent = (index) => {
-    setEvents(events.filter((_, i) => i !== index));
+    const updatedEvents = events.filter((_, i) => i !== index);
+    setEvents(updatedEvents);
+    
+    // Jeśli wszystkie wydarzenia zostały usunięte, usuń również kolor
+    if (updatedEvents.length === 0) {
+      setColor(null);
+    }
+    
     if (editingIndex === index) {
       setEditingIndex(null);
       setNewEvent({ name: '', description: '', emoji: '📌' });
@@ -146,9 +153,11 @@ function WeekModal({ isOpen, onClose, weekData, onSave, birthDate, suggestion, o
   const handleSave = async () => {
     setSaving(true);
     try {
+      // Jeśli nie ma wydarzeń, usuń również kolor
+      const finalColor = events.length === 0 ? null : color;
       await onSave({
         weekIndex: weekData.weekIndex,
-        color,
+        color: finalColor,
         events
       });
       onClose();
