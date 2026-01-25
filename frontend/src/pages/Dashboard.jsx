@@ -69,8 +69,18 @@ function Dashboard() {
         </button>
 
         <div className="form-header">
-          <h1>Twój panel</h1>
-          <p>Witaj, {user?.email}</p>
+          <div>
+            <h1>Twój panel</h1>
+            <p>Witaj, {user?.email}</p>
+          </div>
+          <button 
+            className="btn-logout" 
+            onClick={handleLogout}
+            title="Wyloguj się"
+          >
+            <span className="btn-logout-text">Wyloguj</span>
+            <span className="btn-logout-emoji">🚪</span>
+          </button>
         </div>
 
         <div className="dashboard-content">
@@ -81,12 +91,6 @@ function Dashboard() {
               onClick={handleCreateCalendar}
             >
               Stwórz nowy kalendarz
-            </button>
-            <button 
-              className="btn-logout" 
-              onClick={handleLogout}
-            >
-              Wyloguj się
             </button>
           </div>
 

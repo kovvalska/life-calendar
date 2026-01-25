@@ -39,6 +39,14 @@ function CalendarResult() {
   const [suggestionModalOpen, setSuggestionModalOpen] = useState(false);
   const [selectedSuggestion, setSelectedSuggestion] = useState(null);
   const carouselTimerRef = useRef(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, index: 0 });
+  const [dragOffset, setDragOffset] = useState(0);
+  const carouselRef = useRef(null);
+  const lastIndexChangeRef = useRef(0);
+  const trackRef = useRef(null);
+  const [isTransitioning, setIsTransitioning] = useState(true);
+  const dragStartIndexRef = useRef(0); // Oryginalny indeks na początku przeciągania
 
   const { birthDate, name, expectedLifespan, livedWeeks, totalWeeks, lifeResult } = useMemo(() => {
     const cal = displayCalendar;
@@ -157,13 +165,55 @@ function CalendarResult() {
   }, [calendarId, token]);
 
   useEffect(() => {
-    carouselTimerRef.current = setInterval(() => {
-      setCarouselIndex((i) => (i + 1) % SUGGESTIONS.length);
-    }, CAROUSEL_AUTO_MS);
+    if (isDragging) {
+      if (carouselTimerRef.current) {
+        clearInterval(carouselTimerRef.current);
+        carouselTimerRef.current = null;
+      }
+    } else {
+      carouselTimerRef.current = setInterval(() => {
+        setCarouselIndex((i) => i + 1);
+      }, CAROUSEL_AUTO_MS);
+    }
     return () => {
       if (carouselTimerRef.current) clearInterval(carouselTimerRef.current);
     };
-  }, []);
+  }, [isDragging]);
+
+  // Obsługa płynnego przejścia z ostatniego na pierwszy
+  useEffect(() => {
+    if (!trackRef.current || isDragging) return;
+    
+    const handleTransitionEnd = () => {
+      // Jeśli jesteśmy na duplikacie ostatniego elementu (indeks >= SUGGESTIONS.length)
+      if (carouselIndex >= SUGGESTIONS.length) {
+        trackRef.current.style.transition = 'none';
+        setCarouselIndex(0);
+        setTimeout(() => {
+          if (trackRef.current) {
+            trackRef.current.style.transition = '';
+          }
+        }, 50);
+      }
+      // Jeśli jesteśmy na duplikacie pierwszego elementu (indeks < 0)
+      else if (carouselIndex < 0) {
+        trackRef.current.style.transition = 'none';
+        setCarouselIndex(SUGGESTIONS.length - 1);
+        setTimeout(() => {
+          if (trackRef.current) {
+            trackRef.current.style.transition = '';
+          }
+        }, 50);
+      }
+    };
+
+    const track = trackRef.current;
+    track.addEventListener('transitionend', handleTransitionEnd);
+    
+    return () => {
+      track.removeEventListener('transitionend', handleTransitionEnd);
+    };
+  }, [carouselIndex, isDragging]);
 
   const totalYears = Math.ceil(expectedLifespan) || 90;
 
@@ -222,8 +272,85 @@ function CalendarResult() {
     setSuggestionModalOpen(true);
   };
 
-  const goCarouselPrev = () => setCarouselIndex((i) => (i - 1 + SUGGESTIONS.length) % SUGGESTIONS.length);
-  const goCarouselNext = () => setCarouselIndex((i) => (i + 1) % SUGGESTIONS.length);
+  const goCarouselPrev = () => {
+    setCarouselIndex((i) => i - 1);
+  };
+  
+  const goCarouselNext = () => {
+    setCarouselIndex((i) => i + 1);
+  };
+
+  const getClientX = (e) => {
+    return e.touches ? e.touches[0].clientX : e.clientX;
+  };
+
+  const handleCarouselStart = (e) => {
+    setIsDragging(true);
+    const clientX = getClientX(e);
+    dragStartIndexRef.current = carouselIndex; // Zapisz oryginalny indeks
+    setDragStart({ x: clientX, index: carouselIndex });
+    setDragOffset(0);
+    lastIndexChangeRef.current = carouselIndex;
+  };
+
+  const handleCarouselMove = (e) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const clientX = getClientX(e);
+    const deltaX = clientX - dragStart.x;
+    
+    if (carouselRef.current) {
+      const cardWidth = carouselRef.current.offsetWidth;
+      const originalStartIndex = dragStartIndexRef.current; // Oryginalny indeks na początku przeciągania
+      
+      // Ogranicz dragOffset do maksymalnie jednej karty w każdą stronę
+      // Zapobiega to widzeniu kart 3, 4, 5 itd. podczas przeciągania
+      let limitedDeltaX = deltaX;
+      if (deltaX < 0) {
+        // Przeciąganie w lewo - nie pozwól zobaczyć więcej niż jedną następną kartę
+        limitedDeltaX = Math.max(deltaX, -cardWidth);
+      } else {
+        // Przeciąganie w prawo - nie pozwól zobaczyć więcej niż jedną poprzednią kartę
+        limitedDeltaX = Math.min(deltaX, cardWidth);
+      }
+      
+      // Aktualizuj wizualny offset (ograniczony) - NIE zmieniaj indeksu podczas przeciągania
+      setDragOffset(limitedDeltaX);
+    }
+  };
+
+  const handleCarouselEnd = () => {
+    if (!isDragging) return;
+    
+    // Zmień indeks tylko na końcu przeciągania, jeśli przeciągnięto wystarczająco daleko
+    if (carouselRef.current && Math.abs(dragOffset) > 0) {
+      const cardWidth = carouselRef.current.offsetWidth;
+      const threshold = cardWidth * 0.3; // Próg do zmiany karty (30%)
+      const startIndex = dragStartIndexRef.current; // Oryginalny indeks
+      
+      if (Math.abs(dragOffset) >= threshold) {
+        // Przeciągnięto wystarczająco daleko - zmień indeks
+        let newIndex;
+        if (dragOffset > 0) {
+          // Przeciągnięcie w prawo = poprzednia sugestia
+          newIndex = startIndex - 1;
+        } else {
+          // Przeciągnięcie w lewo = następna sugestia
+          newIndex = startIndex + 1;
+        }
+        
+        // Zmień indeks tylko o 1
+        if (Math.abs(newIndex - startIndex) === 1) {
+          setCarouselIndex(newIndex);
+          lastIndexChangeRef.current = newIndex;
+        }
+      }
+      // Jeśli przeciągnięto mniej niż próg, pozostaje na aktualnej karcie (dragOffset zostanie zresetowany)
+    }
+    
+    setIsDragging(false);
+    setDragOffset(0);
+  };
 
   const handleRetrySave = () => {
     if (!calendarData || !lifeResult || !isAuthenticated) return;
@@ -291,7 +418,7 @@ function CalendarResult() {
     );
   }
 
-  const currentSuggestion = SUGGESTIONS[carouselIndex];
+  const currentSuggestion = SUGGESTIONS[carouselIndex % SUGGESTIONS.length];
 
   return (
     <main className="calendar-result-page">
@@ -304,17 +431,15 @@ function CalendarResult() {
           <div className="info-and-carousel-row">
             <div className="calendar-result-data">
               <h1 className="calendar-result-title">{name}</h1>
-              <p className="calendar-result-stats">
+              <div className="calendar-result-stats">
                 {birthDate && (
-                  <>
-                    Urodzony: {new Date(birthDate).toLocaleDateString('pl-PL')} ·{' '}
-                  </>
+                  <span>Urodzony: {new Date(birthDate).toLocaleDateString('pl-PL')}</span>
                 )}
-                Przeżyte tygodnie: <strong>{livedWeeks.toLocaleString('pl-PL')}</strong>
+                <span>Przeżyte tygodnie: <strong>{livedWeeks.toLocaleString('pl-PL')}</strong></span>
                 {expectedLifespan && (
-                  <> · Szacowana długość życia: <strong>{expectedLifespan} lat</strong></>
+                  <span>Szacowana długość życia: <strong>{expectedLifespan} lat</strong></span>
                 )}
-              </p>
+              </div>
               {calendarData && !fromDashboard && isAuthenticated && (
                 <div className="calendar-save-status">
                   {saveStatus === 'saving' && <span className="save-status saving">Zapisywanie kalendarza…</span>}
@@ -335,26 +460,90 @@ function CalendarResult() {
 
             <div className="suggestions-carousel-inline">
               <span className="suggestions-label">Sugestie</span>
-              <div className="suggestions-carousel">
+              <div 
+                className="suggestions-carousel"
+                onMouseDown={handleCarouselStart}
+                onMouseMove={handleCarouselMove}
+                onMouseUp={handleCarouselEnd}
+                onMouseLeave={handleCarouselEnd}
+                onTouchStart={handleCarouselStart}
+                onTouchMove={handleCarouselMove}
+                onTouchEnd={handleCarouselEnd}
+              >
                 <button type="button" className="carousel-btn carousel-prev" onClick={goCarouselPrev} aria-label="Poprzednia">‹</button>
-                <div className="suggestion-card" style={{ '--suggestion-color': currentSuggestion?.color ?? '#e5e5e5' }}>
-                  {currentSuggestion && (
-                    <>
-                      <div className="suggestion-card-header">
-                        <span className="suggestion-card-emoji">{currentSuggestion.emoji}</span>
-                        <span className="suggestion-card-title">{currentSuggestion.title}</span>
-                      </div>
-                      <p className="suggestion-card-desc">{currentSuggestion.description}</p>
-                      <button
-                        type="button"
-                        className="btn-add-suggestion"
-                        onClick={() => handleSuggestionAdd(currentSuggestion)}
-                        disabled={!calendarId || !token}
+                <div className={`suggestions-carousel-wrapper ${isDragging ? 'dragging' : ''}`} ref={carouselRef}>
+                  <div 
+                    ref={trackRef}
+                    className={`suggestions-carousel-track ${isDragging ? 'dragging' : ''}`}
+                    style={{ 
+                      transform: `translateX(calc(-${(carouselIndex + 1) * 100}% + ${dragOffset}px))`,
+                      transition: isDragging ? 'none' : 'transform 0.4s ease-in-out'
+                    }}
+                  >
+                    {/* Duplikat ostatniego elementu na początku */}
+                    {SUGGESTIONS.length > 0 && (
+                      <div 
+                        className="suggestion-card" 
+                        style={{ '--suggestion-color': SUGGESTIONS[SUGGESTIONS.length - 1]?.color ?? '#e5e5e5' }}
                       >
-                        Dodaj
-                      </button>
-                    </>
-                  )}
+                        <div className="suggestion-card-header">
+                          <span className="suggestion-card-emoji">{SUGGESTIONS[SUGGESTIONS.length - 1].emoji}</span>
+                          <span className="suggestion-card-title">{SUGGESTIONS[SUGGESTIONS.length - 1].title}</span>
+                        </div>
+                        <p className="suggestion-card-desc">{SUGGESTIONS[SUGGESTIONS.length - 1].description}</p>
+                        <button
+                          type="button"
+                          className="btn-add-suggestion"
+                          onClick={() => handleSuggestionAdd(SUGGESTIONS[SUGGESTIONS.length - 1])}
+                          disabled={!calendarId || !token}
+                        >
+                          Dodaj
+                        </button>
+                      </div>
+                    )}
+                    {SUGGESTIONS.map((suggestion, index) => (
+                      <div 
+                        key={index}
+                        className="suggestion-card" 
+                        style={{ '--suggestion-color': suggestion?.color ?? '#e5e5e5' }}
+                      >
+                        <div className="suggestion-card-header">
+                          <span className="suggestion-card-emoji">{suggestion.emoji}</span>
+                          <span className="suggestion-card-title">{suggestion.title}</span>
+                        </div>
+                        <p className="suggestion-card-desc">{suggestion.description}</p>
+                        <button
+                          type="button"
+                          className="btn-add-suggestion"
+                          onClick={() => handleSuggestionAdd(suggestion)}
+                          disabled={!calendarId || !token}
+                        >
+                          Dodaj
+                        </button>
+                      </div>
+                    ))}
+                    {/* Duplikat pierwszego elementu na końcu */}
+                    {SUGGESTIONS.length > 0 && (
+                      <div 
+                        className="suggestion-card" 
+                        style={{ '--suggestion-color': SUGGESTIONS[0]?.color ?? '#e5e5e5' }}
+                      >
+                        <div className="suggestion-card-header">
+                          <span className="suggestion-card-emoji">{SUGGESTIONS[0].emoji}</span>
+                          <span className="suggestion-card-title">{SUGGESTIONS[0].title}</span>
+                        </div>
+                        <p className="suggestion-card-desc">{SUGGESTIONS[0].description}</p>
+                        <button
+                          type="button"
+                          className="btn-add-suggestion"
+                          onClick={() => handleSuggestionAdd(SUGGESTIONS[0])}
+                          disabled={!calendarId || !token}
+                        >
+                          Dodaj
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <button type="button" className="carousel-btn carousel-next" onClick={goCarouselNext} aria-label="Następna">›</button>
               </div>
@@ -376,7 +565,7 @@ function CalendarResult() {
         <div className="calendar-result-block calendar-result-calendar">
           <div className="calendar-legend">
             <span className="legend-item">
-              <span className="legend-dot lived"></span> Przeżyte (kliknij, aby edytować)
+              <span className="legend-dot lived"></span> Przeżyte
             </span>
             <span className="legend-item">
               <span className="legend-dot future"></span> Przyszłe
