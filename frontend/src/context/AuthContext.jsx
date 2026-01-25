@@ -1,8 +1,8 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import * as authAPI from '../api/auth';
+import * as calendarAPI from '../api/calendar';
 
 const AuthContext = createContext(null);
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -14,23 +14,13 @@ export function AuthProvider({ children }) {
     const checkAuth = async () => {
       if (token) {
         try {
-          const response = await fetch(`${API_URL}/api/auth/me`, {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          });
-          
-          if (response.ok) {
-            const data = await response.json();
-            setUser(data.user);
-          } else {
-            // Token nieważny
-            localStorage.removeItem('token');
-            setToken(null);
-            setUser(null);
-          }
+          const data = await authAPI.getMe(token);
+          setUser(data.user);
         } catch (error) {
-          console.error('Auth check error:', error);
+          // Token nieważny
+          localStorage.removeItem('token');
+          setToken(null);
+          setUser(null);
         }
       }
       setLoading(false);
@@ -41,34 +31,12 @@ export function AuthProvider({ children }) {
 
   // Rejestracja
   const register = async (email, password) => {
-    const response = await fetch(`${API_URL}/api/auth/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
-    });
-    
-    const data = await response.json();
-    
-    if (!response.ok) {
-      throw new Error(data.message);
-    }
-    
-    return data;
+    return await authAPI.register(email, password);
   };
 
   // Weryfikacja kodu
   const verify = async (email, code) => {
-    const response = await fetch(`${API_URL}/api/auth/verify`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, code })
-    });
-    
-    const data = await response.json();
-    
-    if (!response.ok) {
-      throw new Error(data.message);
-    }
+    const data = await authAPI.verify(email, code);
     
     // Zapisz token i użytkownika
     localStorage.setItem('token', data.token);
@@ -80,44 +48,24 @@ export function AuthProvider({ children }) {
 
   // Logowanie
   const login = async (email, password) => {
-    const response = await fetch(`${API_URL}/api/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
-    });
-    
-    const data = await response.json();
-    
-    if (!response.ok) {
-      if (data.requiresVerification) {
-        throw { message: data.message, requiresVerification: true };
-      }
-      throw new Error(data.message);
+    try {
+      const data = await authAPI.login(email, password);
+      
+      // Zapisz token i użytkownika
+      localStorage.setItem('token', data.token);
+      setToken(data.token);
+      setUser(data.user);
+      
+      return data;
+    } catch (error) {
+      // Przekaż błąd z requiresVerification jeśli występuje
+      throw error;
     }
-    
-    // Zapisz token i użytkownika
-    localStorage.setItem('token', data.token);
-    setToken(data.token);
-    setUser(data.user);
-    
-    return data;
   };
 
   // Ponowne wysłanie kodu
   const resendCode = async (email) => {
-    const response = await fetch(`${API_URL}/api/auth/resend-code`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email })
-    });
-    
-    const data = await response.json();
-    
-    if (!response.ok) {
-      throw new Error(data.message);
-    }
-    
-    return data;
+    return await authAPI.resendCode(email);
   };
 
   // Wylogowanie
@@ -129,83 +77,22 @@ export function AuthProvider({ children }) {
 
   // Zapisz kalendarz
   const saveCalendar = async (calendarData, result) => {
-    const response = await fetch(`${API_URL}/api/calendar`, {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        name: calendarData.name,
-        birthDate: calendarData.birthDate,
-        gender: calendarData.gender,
-        sleepQuality: calendarData.sleepQuality,
-        physicalActivity: calendarData.physicalActivity,
-        nutrition: calendarData.nutrition,
-        stressLevel: calendarData.stressLevel,
-        smoking: calendarData.smoking,
-        alcohol: calendarData.alcohol,
-        expectedLifespan: result.expectedLifespan,
-        currentAge: result.currentAge,
-        remainingYears: result.remainingYears,
-        livedWeeks: result.livedWeeks,
-        remainingWeeks: result.remainingWeeks,
-        totalWeeks: result.totalWeeks
-      })
-    });
-    
-    const data = await response.json();
-    
-    if (!response.ok) {
-      throw new Error(data.message);
-    }
-    
-    return data;
+    return await calendarAPI.saveCalendar(calendarData, result, token);
   };
 
   // Pobierz pojedynczy kalendarz
   const getCalendar = async (id) => {
-    const response = await fetch(`${API_URL}/api/calendar/${id}`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.message || 'Błąd pobierania kalendarza');
-    return data.calendar;
+    return await calendarAPI.getCalendar(id, token);
   };
 
   // Pobierz kalendarze użytkownika
   const getCalendars = async () => {
-    const response = await fetch(`${API_URL}/api/calendar`, {
-      headers: { 
-        'Authorization': `Bearer ${token}`
-      }
-    });
-    
-    const data = await response.json();
-    
-    if (!response.ok) {
-      throw new Error(data.message);
-    }
-    
-    return data.calendars;
+    return await calendarAPI.getCalendars(token);
   };
 
   // Usuń kalendarz
   const deleteCalendar = async (calendarId) => {
-    const response = await fetch(`${API_URL}/api/calendar/${calendarId}`, {
-      method: 'DELETE',
-      headers: { 
-        'Authorization': `Bearer ${token}`
-      }
-    });
-    
-    const data = await response.json();
-    
-    if (!response.ok) {
-      throw new Error(data.message);
-    }
-    
-    return data;
+    return await calendarAPI.deleteCalendar(calendarId, token);
   };
 
   const value = {

@@ -1,39 +1,14 @@
 const express = require('express');
-const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
 const Calendar = require('../models/Calendar');
+const Event = require('../models/Event');
+const { authMiddleware } = require('../middleware/auth');
+const { validateCalendar, validateObjectId, handleValidationErrors } = require('../middleware/validation');
 
 const router = express.Router();
 
-// Middleware do weryfikacji tokenu
-const authMiddleware = async (req, res, next) => {
-  try {
-    const authHeader = req.headers.authorization;
-    
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ 
-        success: false, 
-        message: 'Brak tokenu autoryzacji' 
-      });
-    }
-
-    const token = authHeader.split(' ')[1];
-    const decoded = jwt.verify(
-      token, 
-      process.env.JWT_SECRET || 'default-secret-change-in-production'
-    );
-
-    req.userId = decoded.userId;
-    next();
-  } catch (error) {
-    res.status(401).json({ 
-      success: false, 
-      message: 'Nieprawidłowy token' 
-    });
-  }
-};
-
 // POST /api/calendar - Zapisz nowy kalendarz
-router.post('/', authMiddleware, async (req, res) => {
+router.post('/', authMiddleware, validateCalendar, async (req, res) => {
   try {
     const {
       name,
@@ -110,7 +85,7 @@ router.get('/', authMiddleware, async (req, res) => {
 });
 
 // GET /api/calendar/:id - Pobierz konkretny kalendarz
-router.get('/:id', authMiddleware, async (req, res) => {
+router.get('/:id', authMiddleware, validateObjectId('id'), handleValidationErrors, async (req, res) => {
   try {
     const calendar = await Calendar.findOne({ 
       _id: req.params.id, 
@@ -138,20 +113,35 @@ router.get('/:id', authMiddleware, async (req, res) => {
   }
 });
 
-// DELETE /api/calendar/:id - Usuń kalendarz
-router.delete('/:id', authMiddleware, async (req, res) => {
+// DELETE /api/calendar/:id - Usuń kalendarz (z transakcją usuwa też wydarzenia)
+router.delete('/:id', authMiddleware, validateObjectId('id'), handleValidationErrors, async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
-    const calendar = await Calendar.findOneAndDelete({ 
+    // Sprawdź czy kalendarz istnieje i należy do użytkownika
+    const calendar = await Calendar.findOne({ 
       _id: req.params.id, 
       userId: req.userId 
-    });
+    }).session(session);
 
     if (!calendar) {
+      await session.abortTransaction();
+      session.endSession();
       return res.status(404).json({
         success: false,
         message: 'Kalendarz nie znaleziony'
       });
     }
+
+    // Usuń wszystkie wydarzenia powiązane z kalendarzem
+    await Event.deleteMany({ calendarId: req.params.id }).session(session);
+
+    // Usuń kalendarz
+    await Calendar.findByIdAndDelete(req.params.id).session(session);
+
+    await session.commitTransaction();
+    session.endSession();
 
     res.json({
       success: true,
@@ -159,6 +149,8 @@ router.delete('/:id', authMiddleware, async (req, res) => {
     });
 
   } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
     console.error('Delete calendar error:', error);
     res.status(500).json({
       success: false,

@@ -2,26 +2,11 @@ const express = require('express');
 const router = express.Router();
 const Event = require('../models/Event');
 const Calendar = require('../models/Calendar');
-const jwt = require('jsonwebtoken');
-
-// Middleware autoryzacji
-const authMiddleware = async (req, res, next) => {
-  try {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) {
-      return res.status(401).json({ message: 'Brak tokenu autoryzacji' });
-    }
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.userId = decoded.userId;
-    next();
-  } catch (error) {
-    res.status(401).json({ message: 'Nieprawidłowy token' });
-  }
-};
+const { authMiddleware } = require('../middleware/auth');
+const { validateObjectId, validateEvent, handleValidationErrors } = require('../middleware/validation');
 
 // Pobierz wszystkie wydarzenia dla kalendarza
-router.get('/calendar/:calendarId', authMiddleware, async (req, res) => {
+router.get('/calendar/:calendarId', authMiddleware, validateObjectId('calendarId'), handleValidationErrors, async (req, res) => {
   try {
     const { calendarId } = req.params;
 
@@ -47,7 +32,7 @@ router.get('/calendar/:calendarId', authMiddleware, async (req, res) => {
 });
 
 // Pobierz wydarzenie dla konkretnego tygodnia
-router.get('/calendar/:calendarId/week/:weekIndex', authMiddleware, async (req, res) => {
+router.get('/calendar/:calendarId/week/:weekIndex', authMiddleware, validateObjectId('calendarId'), handleValidationErrors, async (req, res) => {
   try {
     const { calendarId, weekIndex } = req.params;
 
@@ -66,7 +51,7 @@ router.get('/calendar/:calendarId/week/:weekIndex', authMiddleware, async (req, 
 });
 
 // Zapisz/aktualizuj wydarzenie dla tygodnia
-router.put('/calendar/:calendarId/week/:weekIndex', authMiddleware, async (req, res) => {
+router.put('/calendar/:calendarId/week/:weekIndex', authMiddleware, validateObjectId('calendarId'), validateEvent, async (req, res) => {
   try {
     const { calendarId, weekIndex } = req.params;
     const { color, events } = req.body;
@@ -97,7 +82,7 @@ router.put('/calendar/:calendarId/week/:weekIndex', authMiddleware, async (req, 
 });
 
 // Usuń wydarzenie z tygodnia
-router.delete('/calendar/:calendarId/week/:weekIndex', authMiddleware, async (req, res) => {
+router.delete('/calendar/:calendarId/week/:weekIndex', authMiddleware, validateObjectId('calendarId'), handleValidationErrors, async (req, res) => {
   try {
     const { calendarId, weekIndex } = req.params;
 

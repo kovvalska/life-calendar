@@ -1,7 +1,9 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
+const { body } = require('express-validator');
 const User = require('../models/User');
 const { sendVerificationEmail } = require('../utils/sendEmail');
+const { validateRegister, validateLogin, validateVerify, handleValidationErrors } = require('../middleware/validation');
 
 const router = express.Router();
 
@@ -15,24 +17,9 @@ const generateToken = (userId) => {
 };
 
 // POST /api/auth/register - Rejestracja
-router.post('/register', async (req, res) => {
+router.post('/register', validateRegister, async (req, res) => {
   try {
     const { email, password } = req.body;
-
-    // Walidacja
-    if (!email || !password) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Email i hasło są wymagane' 
-      });
-    }
-
-    if (password.length < 6) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Hasło musi mieć minimum 6 znaków' 
-      });
-    }
 
     // Sprawdź czy użytkownik istnieje
     const existingUser = await User.findOne({ email });
@@ -82,16 +69,9 @@ router.post('/register', async (req, res) => {
 });
 
 // POST /api/auth/verify - Weryfikacja kodu
-router.post('/verify', async (req, res) => {
+router.post('/verify', validateVerify, async (req, res) => {
   try {
     const { email, code } = req.body;
-
-    if (!email || !code) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Email i kod są wymagane' 
-      });
-    }
 
     const user = await User.findOne({ email });
 
@@ -153,16 +133,9 @@ router.post('/verify', async (req, res) => {
 });
 
 // POST /api/auth/login - Logowanie
-router.post('/login', async (req, res) => {
+router.post('/login', validateLogin, async (req, res) => {
   try {
     const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Email i hasło są wymagane' 
-      });
-    }
 
     // Znajdź użytkownika
     const user = await User.findOne({ email });
@@ -221,16 +194,15 @@ router.post('/login', async (req, res) => {
 });
 
 // POST /api/auth/resend-code - Ponowne wysłanie kodu
-router.post('/resend-code', async (req, res) => {
+router.post('/resend-code', [
+  body('email')
+    .isEmail()
+    .withMessage('Podaj prawidłowy adres email')
+    .normalizeEmail(),
+  handleValidationErrors
+], async (req, res) => {
   try {
     const { email } = req.body;
-
-    if (!email) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Email jest wymagany' 
-      });
-    }
 
     const user = await User.findOne({ email });
 
