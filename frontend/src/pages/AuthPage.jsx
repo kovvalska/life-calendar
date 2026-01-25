@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { calculateLifeExpectancy } from '../utils/lifeExpectancy';
 
 function AuthPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { register, verify, login, resendCode, isAuthenticated } = useAuth();
+  const { register, verify, login, resendCode, saveCalendar, isAuthenticated } = useAuth();
   
   const [isLogin, setIsLogin] = useState(true);
   const [showVerification, setShowVerification] = useState(false);
@@ -24,12 +25,12 @@ function AuthPage() {
     verificationCode: ''
   });
 
-  // Przekieruj jeśli już zalogowany
+  // Przekieruj jeśli już zalogowany (bez kalendarza do zapisania)
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && !hasCalendarData) {
       navigate('/dashboard');
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, hasCalendarData, navigate]);
 
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -44,21 +45,30 @@ function AuthPage() {
 
     try {
       if (showVerification) {
-        // Weryfikacja kodu
         await verify(formData.email, formData.verificationCode);
-        navigate('/dashboard');
+        if (hasCalendarData) {
+          const lifeResult = calculateLifeExpectancy(calendarData);
+          const data = await saveCalendar(calendarData, lifeResult);
+          const id = data?.calendar?._id;
+          navigate(id ? `/wynik?calendar=${id}` : '/wynik', { state: { savedCalendar: data?.calendar, alreadySaved: true } });
+        } else {
+          navigate('/dashboard');
+        }
       } else if (isLogin) {
-        // Logowanie
         await login(formData.email, formData.password);
-        navigate('/dashboard');
+        if (hasCalendarData) {
+          const lifeResult = calculateLifeExpectancy(calendarData);
+          const data = await saveCalendar(calendarData, lifeResult);
+          const id = data?.calendar?._id;
+          navigate(id ? `/wynik?calendar=${id}` : '/wynik', { state: { savedCalendar: data?.calendar, alreadySaved: true } });
+        } else {
+          navigate('/dashboard');
+        }
       } else {
-        // Rejestracja
         if (formData.password !== formData.confirmPassword) {
           throw new Error('Hasła nie są identyczne');
         }
-        
         const result = await register(formData.email, formData.password);
-        
         if (result.requiresVerification) {
           setShowVerification(true);
           setSuccess('Kod weryfikacyjny został wysłany na Twój email');

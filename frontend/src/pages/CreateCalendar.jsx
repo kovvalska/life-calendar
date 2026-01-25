@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const rangeLabels5 = ['Bardzo źle', 'Źle', 'Umiarkowanie', 'Dobrze', 'Bardzo dobrze'];
@@ -6,6 +6,11 @@ const rangeLabels3 = ['Nigdy', 'Okazjonalnie', 'Często'];
 
 function CreateCalendar() {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    sessionStorage.removeItem('life-calendar-saved');
+    sessionStorage.removeItem('life-calendar-viewing');
+  }, []);
   
   const [formData, setFormData] = useState({
     name: 'Mój Kalendarz',

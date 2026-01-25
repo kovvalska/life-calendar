@@ -29,7 +29,11 @@ const connectDB = async () => {
 
 // Routes
 const authRoutes = require('./routes/auth');
+const calendarRoutes = require('./routes/calendar');
+const eventsRoutes = require('./routes/events');
 app.use('/api/auth', authRoutes);
+app.use('/api/calendar', calendarRoutes);
+app.use('/api/events', eventsRoutes);
 
 app.get('/', (req, res) => {
   res.json({ message: 'Hello World! 🌍 Backend działa!' });

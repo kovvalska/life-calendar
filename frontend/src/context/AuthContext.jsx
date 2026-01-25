@@ -127,6 +127,87 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
+  // Zapisz kalendarz
+  const saveCalendar = async (calendarData, result) => {
+    const response = await fetch(`${API_URL}/api/calendar`, {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        name: calendarData.name,
+        birthDate: calendarData.birthDate,
+        gender: calendarData.gender,
+        sleepQuality: calendarData.sleepQuality,
+        physicalActivity: calendarData.physicalActivity,
+        nutrition: calendarData.nutrition,
+        stressLevel: calendarData.stressLevel,
+        smoking: calendarData.smoking,
+        alcohol: calendarData.alcohol,
+        expectedLifespan: result.expectedLifespan,
+        currentAge: result.currentAge,
+        remainingYears: result.remainingYears,
+        livedWeeks: result.livedWeeks,
+        remainingWeeks: result.remainingWeeks,
+        totalWeeks: result.totalWeeks
+      })
+    });
+    
+    const data = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(data.message);
+    }
+    
+    return data;
+  };
+
+  // Pobierz pojedynczy kalendarz
+  const getCalendar = async (id) => {
+    const response = await fetch(`${API_URL}/api/calendar/${id}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || 'Błąd pobierania kalendarza');
+    return data.calendar;
+  };
+
+  // Pobierz kalendarze użytkownika
+  const getCalendars = async () => {
+    const response = await fetch(`${API_URL}/api/calendar`, {
+      headers: { 
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    const data = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(data.message);
+    }
+    
+    return data.calendars;
+  };
+
+  // Usuń kalendarz
+  const deleteCalendar = async (calendarId) => {
+    const response = await fetch(`${API_URL}/api/calendar/${calendarId}`, {
+      method: 'DELETE',
+      headers: { 
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    const data = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(data.message);
+    }
+    
+    return data;
+  };
+
   const value = {
     user,
     token,
@@ -136,7 +217,11 @@ export function AuthProvider({ children }) {
     verify,
     login,
     resendCode,
-    logout
+    logout,
+    saveCalendar,
+    getCalendar,
+    getCalendars,
+    deleteCalendar
   };
 
   return (
