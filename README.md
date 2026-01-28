@@ -48,28 +48,13 @@ npm run dev
 
 ## Deploy na Render.com
 
-### Backend (Web Service)
+Szczegółowa analiza, wymagane poprawki i **krok po kroku** są w **[RENDER_DEPLOY.md](./RENDER_DEPLOY.md)**.
 
-1. Utwórz **New Web Service**
-2. Połącz z repozytorium Git
-3. Ustawienia:
-   - **Root Directory:** `backend`
-   - **Build Command:** `npm install`
-   - **Start Command:** `npm start`
-4. Environment Variables:
-   - `MONGODB_URI` = twój connection string MongoDB Atlas
-   - `NODE_ENV` = `production`
-
-### Frontend (Static Site)
-
-1. Utwórz **New Static Site**
-2. Połącz z repozytorium Git
-3. Ustawienia:
-   - **Root Directory:** `frontend`
-   - **Build Command:** `npm install && npm run build`
-   - **Publish Directory:** `dist`
-4. Environment Variables:
-   - `VITE_API_URL` = URL twojego backend service (np. `https://life-calendar-api.onrender.com`)
+**W skrócie:**
+- Backend: Web Service, `rootDir: backend`, `npm install` / `npm start`, zmienne: `MONGODB_URI`, `JWT_SECRET`, `NODE_ENV=production`.
+- Frontend: Static Site, `rootDir: frontend`, `npm install && npm run build`, `dist`, `VITE_API_URL` = URL backendu.
+- SPA: reguła rewrite `/*` → `/index.html` (w `render.yaml` lub w Dashboard).
+- Opcjonalnie: **Blueprint** – `New → Blueprint`, połącz repo z `render.yaml`; Render utworzy obie usługi.
 
 ## Technologie
 

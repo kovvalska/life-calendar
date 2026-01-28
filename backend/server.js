@@ -6,6 +6,18 @@ const mongoose = require('mongoose');
 // Konfiguracja zmiennych środowiskowych
 dotenv.config();
 
+// W produkcji JWT_SECRET musi być ustawione (bezpieczeństwo)
+if (process.env.NODE_ENV === 'production') {
+  const secret = process.env.JWT_SECRET;
+  if (!secret || secret === 'default-secret-change-in-production') {
+    console.error('❌ Ustaw JWT_SECRET w zmiennych środowiskowych (produkcja).');
+    process.exit(1);
+  }
+  if (!process.env.EMAIL_HOST) {
+    console.warn('⚠️  EMAIL_HOST nie ustawione – kody rejestracji nie trafią do użytkowników (użyj EMAIL_* w env).');
+  }
+}
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 

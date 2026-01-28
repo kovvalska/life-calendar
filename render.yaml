@@ -1,0 +1,39 @@
+# Render Blueprint – Kalendarz Życia
+# New → Blueprint → połącz repo. Sekrety (MONGODB_URI, JWT_SECRET) ustaw w Dashboard
+# lub zostaw sync: false i uzupełnij przy pierwszym tworzeniu Blueprint.
+#
+# VITE_API_URL w frontendzie musi wskazywać na URL backendu. Domyślnie zakładamy
+# nazwę usługi backendu: life-calendar-api → https://life-calendar-api.onrender.com
+# Jeśli zmienisz name backendu, zaktualizuj VITE_API_URL.
+
+services:
+  # Backend (Node + Express)
+  - type: web
+    runtime: node
+    name: life-calendar-api
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+
+  # Frontend (Static Site, Vite + React)
+  - type: web
+    runtime: static
+    name: life-calendar
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: frontend/dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        value: https://life-calendar-api.onrender.com
