@@ -13,8 +13,9 @@ if (process.env.NODE_ENV === 'production') {
     console.error('❌ Ustaw JWT_SECRET w zmiennych środowiskowych (produkcja).');
     process.exit(1);
   }
-  if (!process.env.EMAIL_HOST) {
-    console.warn('⚠️  EMAIL_HOST nie ustawione – kody rejestracji nie trafią do użytkowników (użyj EMAIL_* w env).');
+  const hasEmail = process.env.EMAIL_HOST || process.env.SENDGRID_API_KEY || process.env.BREVO_API_KEY || process.env.RESEND_API_KEY;
+  if (!hasEmail) {
+    console.warn('⚠️  Brak konfiguracji email – kody rejestracji nie trafią do użytkowników (SENDGRID_*, BREVO_*, RESEND_* lub EMAIL_*).');
   }
 }
 

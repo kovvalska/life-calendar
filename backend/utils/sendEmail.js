@@ -1,8 +1,73 @@
 const nodemailer = require('nodemailer');
 
+function parseFrom(fromStr) {
+  if (!fromStr || typeof fromStr !== 'string') return { name: 'Kalendarz Życia', email: '' };
+  const m = fromStr.trim().match(/^(.+?)\s*<([^>]+)>$/);
+  if (m) return { name: m[1].trim().replace(/^"|"$/g, ''), email: m[2].trim() };
+  return { name: 'Kalendarz Życia', email: fromStr.trim() };
+}
+
 /**
- * Wysyłka przez Resend (API HTTPS) – działa z Render/free tier, gdzie SMTP często timeoutuje.
- * Wymaga: RESEND_API_KEY, RESEND_FROM (adres z zweryfikowanej domeny w Resend).
+ * SendGrid (API HTTPS) – darmowy plan, bez własnej domeny.
+ * W SendGrid: Single Sender Verification – zweryfikuj np. swój Gmail. Potem: SENDGRID_API_KEY, SENDGRID_FROM (ten adres).
+ */
+async function sendViaSendGrid(to, subject, html) {
+  const from = process.env.SENDGRID_FROM || process.env.EMAIL_FROM;
+  if (!from) {
+    throw new Error('SENDGRID_FROM lub EMAIL_FROM wymagane przy SENDGRID_API_KEY. Użyj zweryfikowanego nadawcy (np. Gmail) z SendGrid → Single Sender.');
+  }
+  const { name, email } = parseFrom(from);
+  if (!email) throw new Error('SENDGRID_FROM musi zawierać adres email (np. "Kalendarz Życia <twoj@gmail.com>").');
+  const res = await fetch('https://api.sendgrid.com/v3/mail/send', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${process.env.SENDGRID_API_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      personalizations: [{ to: [{ email: to }] }],
+      from: { email, name },
+      subject,
+      content: [{ type: 'text/html', value: html }]
+    })
+  });
+  if (res.ok) return { messageId: 'sendgrid' };
+  const data = await res.json().catch(() => ({}));
+  const msg = data.errors?.[0]?.message || data.message || `SendGrid ${res.status}`;
+  throw new Error(msg);
+}
+
+/**
+ * Brevo (API HTTPS) – 300 maili/dzień za darmo. Nadawca: zweryfikowany w Brevo (domena lub pojedynczy adres).
+ * BREVO_API_KEY, BREVO_FROM (albo EMAIL_FROM).
+ */
+async function sendViaBrevo(to, subject, html) {
+  const from = process.env.BREVO_FROM || process.env.EMAIL_FROM;
+  if (!from) {
+    throw new Error('BREVO_FROM lub EMAIL_FROM wymagane przy BREVO_API_KEY. Użyj zweryfikowanego nadawcy w Brevo.');
+  }
+  const { name, email } = parseFrom(from);
+  if (!email) throw new Error('BREVO_FROM musi zawierać adres email.');
+  const res = await fetch('https://api.brevo.com/v3/smtp/email', {
+    method: 'POST',
+    headers: {
+      'api-key': process.env.BREVO_API_KEY,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      sender: { name, email },
+      to: [{ email: to }],
+      subject,
+      htmlContent: html
+    })
+  });
+  const data = await res.json().catch(() => ({}));
+  if (res.ok) return { messageId: data.messageId };
+  throw new Error(data.message || `Brevo API ${res.status}: ${JSON.stringify(data)}`);
+}
+
+/**
+ * Resend (API HTTPS) – wymaga zweryfikowanej domeny. RESEND_API_KEY, RESEND_FROM.
  */
 async function sendViaResend(to, subject, html) {
   const from = process.env.RESEND_FROM || process.env.EMAIL_FROM;
@@ -25,12 +90,19 @@ async function sendViaResend(to, subject, html) {
 }
 
 const sendEmail = async (to, subject, html) => {
-  // 1) Resend (API) – preferowane na Renderze, gdy SMTP ma Connection timeout
+  // 1) SendGrid – darmowy, bez domeny: zweryfikuj Gmail w Single Sender
+  if (process.env.SENDGRID_API_KEY) {
+    return sendViaSendGrid(to, subject, html);
+  }
+  // 2) Brevo – 300/dzień za darmo, nadawca zweryfikowany w Brevo
+  if (process.env.BREVO_API_KEY) {
+    return sendViaBrevo(to, subject, html);
+  }
+  // 3) Resend – wymaga domeny
   if (process.env.RESEND_API_KEY) {
     return sendViaResend(to, subject, html);
   }
-
-  // 2) SMTP (Gmail, Outlook, itp.) – na free tier Render często: Connection timeout
+  // 4) SMTP – na Render free tier często: Connection timeout
   let transporter;
   if (process.env.EMAIL_HOST) {
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
