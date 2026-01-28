@@ -11,6 +11,7 @@ services:
   - type: web
     runtime: node
     name: life-calendar-api
+    plan: free
     rootDir: backend
     buildCommand: npm install
     startCommand: npm start
