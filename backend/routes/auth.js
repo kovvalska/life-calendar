@@ -60,7 +60,7 @@ router.post('/register', validateRegister, async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Register error:', error);
+    console.error('Register error:', error.message, error.response || '', error.stack);
     res.status(500).json({ 
       success: false, 
       message: 'Błąd serwera podczas rejestracji' 

@@ -9,14 +9,19 @@ const sendEmail = async (to, subject, html) => {
   
   if (process.env.EMAIL_HOST) {
     // Produkcja - prawdziwy serwis email
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      throw new Error('EMAIL_USER i EMAIL_PASS są wymagane gdy EMAIL_HOST jest ustawione. Sprawdź zmienne w Render → Environment.');
+    }
     transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
-      port: process.env.EMAIL_PORT || 587,
+      port: parseInt(process.env.EMAIL_PORT, 10) || 587,
       secure: process.env.EMAIL_SECURE === 'true',
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
-      }
+      },
+      connectionTimeout: 15000,
+      greetingTimeout: 10000
     });
   } else {
     // Development - Ethereal (testowy email)
