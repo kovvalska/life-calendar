@@ -596,10 +596,12 @@ body {
   border-radius: 10px;
   font-size: 0.9rem;
   color: #4a4a4a;
+  margin-bottom: 0.5rem;
 }
 
 .calendar-info-icon {
   font-size: 1.2rem;
+  margin-right: 1rem;
 }
 
 /* Alerts */
