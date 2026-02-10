@@ -20,11 +20,11 @@ const eventSchema = new mongoose.Schema({
     name: {
       type: String,
       required: true,
-      maxlength: 100
+      maxlength: 50
     },
     description: {
       type: String,
-      maxlength: 500
+      maxlength: 200
     },
     emoji: {
       type: String,

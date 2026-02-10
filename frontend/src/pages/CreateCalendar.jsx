@@ -61,7 +61,7 @@ function CreateCalendar() {
 
     // Walidacja maksymalnego wieku (120 lat)
     const ageInYears = Math.floor((today - birthDate) / (365.25 * 24 * 60 * 60 * 1000));
-    if (ageInYears > 120) {
+    if (ageInYears >= 120) {
       setValidationError('Maksymalny dopuszczalny wiek to 120 lat');
       return false;
     }

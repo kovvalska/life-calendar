@@ -80,8 +80,8 @@ const validateCalendar = [
     .trim()
     .notEmpty()
     .withMessage('Nazwa kalendarza jest wymagana')
-    .isLength({ max: 100 })
-    .withMessage('Nazwa kalendarza może mieć maksymalnie 100 znaków'),
+    .isLength({ max: 30 })
+    .withMessage('Nazwa kalendarza może mieć maksymalnie 30 znaków'),
   body('birthDate')
     .isISO8601()
     .withMessage('Podaj prawidłową datę urodzenia'),
@@ -153,12 +153,12 @@ const validateEvent = [
     .trim()
     .notEmpty()
     .withMessage('Nazwa wydarzenia jest wymagana')
-    .isLength({ max: 100 })
-    .withMessage('Nazwa wydarzenia może mieć maksymalnie 100 znaków'),
+    .isLength({ max: 50 })
+    .withMessage('Nazwa wydarzenia może mieć maksymalnie 50 znaków'),
   body('events.*.description')
     .optional()
-    .isLength({ max: 500 })
-    .withMessage('Opis może mieć maksymalnie 500 znaków'),
+    .isLength({ max: 200 })
+    .withMessage('Opis może mieć maksymalnie 200 znaków'),
   body('events.*.emoji')
     .optional()
     .isLength({ max: 10 })

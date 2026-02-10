@@ -95,9 +95,10 @@ function CalendarResult() {
         return { birthDate: null, name: '', expectedLifespan: 90, livedWeeks: 0, totalWeeks: 4680, lifeResult: null };
       }
 
-      // Walidacja maksymalnego wieku (120 lat)
+      // Walidacja maksymalnego wieku (120 lat) - dopuszcza dokładnie 120 lat
+      // Sprawdza tylko wiek użytkownika przed zastosowaniem reguły korekty
       const ageInYears = Math.floor((today - birth) / (365.25 * 24 * 60 * 60 * 1000));
-      if (ageInYears > 120) {
+      if (ageInYears >= 120) {
         setValidationError('Maksymalny dopuszczalny wiek to 120 lat');
         return { birthDate: null, name: '', expectedLifespan: 90, livedWeeks: 0, totalWeeks: 4680, lifeResult: null };
       }
@@ -110,17 +111,14 @@ function CalendarResult() {
         const today = new Date();
         const ageInYears = Math.floor((today - birth) / (365.25 * 24 * 60 * 60 * 1000));
         
-        // Jeśli szacowany wiek jest niższy niż wiek osoby, ustaw na wiek osoby + 2
+        // Jeśli szacowany wiek jest niższy niż wiek osoby, ustaw na wiek osoby + 2 (reguła korekty)
         let finalExpectedLifespan = result.expectedLifespan;
         if (finalExpectedLifespan < ageInYears) {
           finalExpectedLifespan = ageInYears + 2;
         }
         
-        // Walidacja maksymalnego wieku (120 lat)
-        if (finalExpectedLifespan > 120) {
-          setValidationError('Szacowany wiek przekracza maksymalny dopuszczalny wiek (120 lat)');
-          return { birthDate: null, name: '', expectedLifespan: 90, livedWeeks: 0, totalWeeks: 4680, lifeResult: null };
-        }
+        // Nie sprawdzamy tutaj czy finalExpectedLifespan > 120, ponieważ walidacja wieku została już wykonana powyżej
+        // Reguła korekty może zwiększyć przewidywaną długość życia powyżej 120 lat dla osób w wieku 120 lat
         
         // Przelicz totalWeeks na podstawie poprawionego wieku
         const totalWeeks = Math.round(finalExpectedLifespan * WEEKS_PER_YEAR);
